@@ -15,6 +15,7 @@ DEFAULT_SEARCH_FLAGS = (
 URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP, PUB_TIMESTAMP = range(6)
 
 from infosfera.index.xapian.adapters import rel_to_prefix
+from veronica import Article
 
 import re
 import sys
@@ -64,7 +65,9 @@ class Search:
 		return {"count": mset.get_matches_upper_bound(), "results": results}
 
 if __name__ == "__main__":
-	se = Search(ur"C:\LibroNegro\Base\indexes\news")
+	from config import xapian_news_base
+	
+	se = Search(xapian_news_base)
 	res = se.doQuery(sys.argv[2],0,100)
 
 	x = [(i["percent"], i) for i in res["results"]]

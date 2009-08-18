@@ -36,13 +36,25 @@ class Article:
 	def __init__(self):
 		self.content = ''
 		self.title = ''
-		self.create_date = datetime.datetime(1,1,1) #ENG-POINT: valores que indican desconocido, 1 de enero del ano 1
+		self.create_date = datetime.datetime(1,1,1) ## @eng-point valores que indican desconocido, 1 de enero del ano 1
 		self.pub_date = datetime.datetime(1,1,1)
 		self.fetch_date = datetime.datetime.now()
 		self.feed_id = None
 		self.feed_title = ""
 		self.link = ''
 		self.id = None
+	
+	def define (self, id, feed, feed_title, link, title, content, published, fetch_date, created):
+		'''id, feed, F.title link, title, content, published, fetch_date, created'''
+		self.content = content.decode("utf8")
+		self.title = title.decode("utf8")
+		self.create_date = created
+		self.pub_date = published
+		self.fetch_date = fetch_date
+		self.feed_id = feed
+		self.feed_title = feed_title.decode("utf8")
+		self.link = link.decode("utf8")
+		self.id = id
 
 class ArticleLoader:
 	def save(self):
@@ -98,11 +110,36 @@ class PostgreSQLArticleLoader(ArticleLoader):
 			errors.log("PostgreSQLArticleLoader", "save", "fallo link ="+a.link+" id="+str(a.id)+" feed="+str(a.feed_id)+"\n"+str(e))
 			print e
 			
+	def loadLastNArticles(self, n):
+		## @todo completar esta funcion para implementar un servicio con web.py
+		cur = self.con.cursor()
+		cur.execute("select A.id, A.feed, F.title, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A inner join feeds as F on A.feed = F.id order by A.published desc limit %s"%n)
+		res = []
+		for data in cur.fetchall():
+			a = Article()
+			a.define(*data)
+			res.append(a)
+		return res
+		
+	def loadLastNArticlesByFeed(self, n, feed_id):
+		## @todo completar esta funcion para implementar un servicio con web.py
+		cur = self.con.cursor()
+		cur.execute("select A.id, A.feed, F.title, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A inner join feeds as F on A.feed = F.id where F.id = %s order by A.published desc limit %s"%(feed_id, n))
+		res = []
+		for data in cur.fetchall():
+			a = Article()
+			a.define(*data)
+			res.append(a)
+		return res
+			
 class Feed:
 	def __init__(self):
 		self.id = None
+		self.rss = None
+		self.site = None
 			
 class PostgresFeedLoader:
+
 	def __init__(self, connection):
 		self.con = connection
 	
@@ -114,7 +151,11 @@ class PostgresFeedLoader:
 	def setLatency(self, feed, latency):
 		cur = self.con.cursor()
 		cur.execute("update feeds set response = %s where id = %s"%(latency, feed.id))
-	
+		
+	def setTitle(self, feed, title):
+		cur = self.con.cursor()
+		cur.execute("update feeds set title = '%s' where id = %s"%(title.replace("'","\\'"), feed.id))
+
 class ErrorLog:
 	def __init__(self, fname):
 		self.file = open(fname,"a")
@@ -125,7 +166,7 @@ class ErrorLog:
 	def log(self, subsystem, module, txt):
 		self.file.write("%s/%s: %s"%(subsystem, module, txt))
 		self.file.flush()
-		
+	
 errors = ErrorLog(logfile)
 
 from htmlentitydefs import name2codepoint as n2cp
@@ -176,7 +217,8 @@ class XapianArticleLoader(ArticleLoader):
 	def save(self, article):
 		term_gen = xapian.TermGenerator()
 		try:
-			untag = replace_acute(decode_htmlentities(strip_html_tags(article.content)))
+			untag = replace_acute(decode_htmlentities(strip_html_tags(article.title + " " + article.content)))
+			untitle = replace_acute(decode_htmlentities(strip_html_tags(article.title)))
 		except UnicodeDecodeError, e:
 			print e
 			errors.log("XapianArticleLoader", "save", str(e))
@@ -184,9 +226,14 @@ class XapianArticleLoader(ArticleLoader):
 		term_gen.index_text_without_positions(untag)
 		
 		doc = term_gen.get_document()
-		doc.add_value( XapianArticleLoader.TITLE, article.title )
+		
+		title_gen = xapian.TermGenerator()
+		title_gen.set_document(doc)
+		title_gen.index_text_without_positions(untitle, 10)## tiene peso 10
+		
+		doc.add_value( XapianArticleLoader.TITLE, unicode(article.title).encode("utf-8") )
 		doc.add_value( XapianArticleLoader.URL, article.link )
-		doc.add_value( XapianArticleLoader.FEED_TITLE, article.feed_title )
+		doc.add_value( XapianArticleLoader.FEED_TITLE, unicode(article.feed_title).encode("utf-8") )
 		doc.add_value( XapianArticleLoader.FEED_ID, str(article.feed_id) )
 		doc.add_value( XapianArticleLoader.FETCH_TIMESTAMP, str(calendar.timegm(article.fetch_date.timetuple())) )
 		doc.add_value( XapianArticleLoader.PUB_TIMESTAMP, str(calendar.timegm(article.pub_date.timetuple())) )
@@ -305,17 +352,29 @@ def process_feed2(id, title, rss, xapian_news_base, vero):
 		print e
 		errors.log("veronica", "process_feed2", "RSS: %s::: %s"%(rss, str(e)))
 		return		
+	
+	title = ""
 		
 	try:
-		if data.has_key("channel"):
+		if data.has_key("feed"):
+			if data.feed.has_key("title"):
+				title = data.feed.title
+			elif data.feed.has_key("title_detail"):
+				title = feed.title_detail.value
+		elif data.has_key("channel"):
 			title = data.channel.title
-		elif data.has_key("feed"):
-			title = data.feed.title
+		
 	except Exception, e:
 		print "CANAL:", rss
 		print e
 		errors.log("veronica", "process_feed2", "Canal: %s; %s"%(rss, str(e)))
-		title = ""
+		
+	
+	f = Feed()
+	f.id = id
+	feed_loader = PostgresFeedLoader(vero)
+	feed_loader.setTitle(f, title)
+		
 	#extraccion de nuevas noticias
 
 	new = {}
@@ -383,7 +442,7 @@ def process_feed2(id, title, rss, xapian_news_base, vero):
 	f.id = id
 	
 	floader = PostgresFeedLoader(vero)
-	floader.updateFeedRatesAndTimes(f, len(new2), 0.15)
+	floader.updateFeedRatesAndTimes(f, len(new2), 0.33)
 	floader.setLatency(f,latency)
 
 	#volcado a indice de xapian
@@ -394,15 +453,6 @@ def process_feed2(id, title, rss, xapian_news_base, vero):
 		loader.save(a)
 	xapian_news_base.flush()
 	vero.commit()
-	
-
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

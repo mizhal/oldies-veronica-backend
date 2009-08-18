@@ -4,6 +4,8 @@ from config import *
 
 from psycopg2 import connect
 
+from exceptions import Exception
+
 if __name__ == "__main__":
 	
 	if exists(xapian_news_base):
@@ -27,8 +29,9 @@ if __name__ == "__main__":
 	try:
 		cur.execute("drop database veronica")
 		db.commit()
-	except:
-		pass
+	except Exception ,e:
+		print e
+		exit(-1)
 		
 	cur.execute("""CREATE DATABASE veronica
 				WITH OWNER = mizhal

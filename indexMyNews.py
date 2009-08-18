@@ -4,6 +4,9 @@ from config import db_string, xapian_news_base
 from veronica import connect, process_feed2, select
 import xapian
 
+from os import remove
+from os.path import exists
+
 if __name__ == '__main__':
 	vero = connect(db_string)
 
@@ -24,4 +27,5 @@ if __name__ == '__main__':
 
 	for id, title, rss in feeds:
 		process_feed2(id, title, rss , db, vero)
-
+		
+	db.flush()
