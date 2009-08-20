@@ -17,9 +17,15 @@ def sync_ff_feeds(dbcon):
       dups[rss] = 1
   dbcon.commit()
 
+import sys
 if __name__ == '__main__':
   from psycopg2 import connect
   
-  vero = connect("host=localhost user=mizhal password=Galatz dbname=veronica")
+  print "usuario de la base de datos"
+  user = sys.stdin.readline()
+  print "clave"
+  passw = sys.stdin.readline()
+  
+  vero = connect("host=192.168.1.7 user=%s password=%s dbname=veronica"%(user, passw))
   sync_ff_feeds(vero)
   vero.commit()
