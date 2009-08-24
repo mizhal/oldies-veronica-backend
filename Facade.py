@@ -55,3 +55,9 @@ class Veronica:
 		
 		vero.commit()
 		
+	def deleteFeed(self, url):
+		pass
+		
+	def classifyFeed(self, feed, sgcat):
+		pass
+		
