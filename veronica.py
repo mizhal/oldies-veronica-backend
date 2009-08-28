@@ -209,7 +209,7 @@ def strip_html_tags(text):
 	return parser.result
 
 class XapianArticleLoader(ArticleLoader):
-	URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP, PUB_TIMESTAMP = range(6)
+	URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP, PUB_TIMESTAMP, ID = range(7)
 	
 	def __init__(self, xapian_db):
 		self.db = xapian_db
@@ -237,12 +237,12 @@ class XapianArticleLoader(ArticleLoader):
 		doc.add_value( XapianArticleLoader.FEED_ID, str(article.feed_id) )
 		doc.add_value( XapianArticleLoader.FETCH_TIMESTAMP, str(calendar.timegm(article.fetch_date.timetuple())) )
 		doc.add_value( XapianArticleLoader.PUB_TIMESTAMP, str(calendar.timegm(article.pub_date.timetuple())) )
+		doc.add_value( XapianArticleLoader.ID, str(article.id))
 		
 		doc.add_term( "D" + strftime("%Y-%m-%d",article.pub_date.timetuple()) )
+		doc.add_term( "U" + article.link) ## @change cambiado para usar como indice la url, ya que para sustituir xapian usa un termino como indice, asi se sustituyen los que tengan el termino dado como primer parametro, no el identificador, por ello, es necesario anyadir ese termino de "unicidad"
 		
-		id_doc = article.id
-		
-		self.db.replace_document(str(id_doc), doc)
+		self.db.replace_document("U" + article.link, doc)
 			
 def process_feed(id, title, rss, vero):
 	'''Process feed and save news in database'''
