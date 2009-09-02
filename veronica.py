@@ -85,7 +85,7 @@ class PostgreSQLArticleLoader(ArticleLoader):
 	def getNLastURIs(self, n, feed_id):
 		cur = self.con.cursor()
 		cur.execute("select link from articles where feed = %s order by fetch_date desc limit %s"%(feed_id, n))
-		return [str(i[0]) for i in cur.fetchall()]
+		return [unicode(i[0]) for i in cur.fetchall()]
 		
 	def save(self, a):
 		cur = self.con.cursor()
