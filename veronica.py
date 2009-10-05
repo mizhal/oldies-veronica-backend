@@ -32,6 +32,9 @@ def select(vero, tries = 6):
 
 content_alias = ['summary','subtitle']
 
+from model.Feed import Feed
+from dao.PostgresFeedLoader import PostgresFeedLoader 
+
 class Article:
 	def __init__(self):
 		self.content = ''
@@ -39,8 +42,7 @@ class Article:
 		self.create_date = datetime.datetime(1,1,1) ## @eng-point valores que indican desconocido, 1 de enero del ano 1
 		self.pub_date = datetime.datetime(1,1,1)
 		self.fetch_date = datetime.datetime.now()
-		self.feed_id = None
-		self.feed_title = ""
+		self.feed = None
 		self.link = ''
 		self.id = None
 	
@@ -51,8 +53,7 @@ class Article:
 		self.create_date = created
 		self.pub_date = published
 		self.fetch_date = fetch_date
-		self.feed_id = feed
-		self.feed_title = feed_title.decode("utf8")
+		self.feed = feed
 		self.link = link.decode("utf8")
 		self.id = id
 
@@ -113,7 +114,7 @@ class PostgreSQLArticleLoader(ArticleLoader):
 	def loadLastNArticles(self, n):
 		## @todo completar esta funcion para implementar un servicio con web.py
 		cur = self.con.cursor()
-		cur.execute("select A.id, A.feed, F.title, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A inner join feeds as F on A.feed = F.id order by A.published desc limit %s"%n)
+		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
 		res = []
 		for data in cur.fetchall():
 			a = Article()
@@ -131,30 +132,6 @@ class PostgreSQLArticleLoader(ArticleLoader):
 			a.define(*data)
 			res.append(a)
 		return res
-			
-class Feed:
-	def __init__(self):
-		self.id = None
-		self.rss = None
-		self.site = None
-			
-class PostgresFeedLoader:
-
-	def __init__(self, connection):
-		self.con = connection
-	
-	def updateFeedRatesAndTimes(self, feed, produced_news, alpha):
-		''' alfa es la decadencia por dia '''
-		cur = self.con.cursor()
-		cur.execute("update feeds set freq = %s*%s*(3600*24)/extract(EPOCH from (now() - last_read)) + (1 - %s) * freq , last_news = %s, last_read = now() where id = %s" % (alpha, produced_news, alpha, produced_news, feed.id))
-		
-	def setLatency(self, feed, latency):
-		cur = self.con.cursor()
-		cur.execute("update feeds set response = %s where id = %s"%(latency, feed.id))
-		
-	def setTitle(self, feed, title):
-		cur = self.con.cursor()
-		cur.execute("update feeds set title = '%s' where id = %s"%(title.replace("'","\\'"), feed.id))
 
 class ErrorLog:
 	def __init__(self, fname):
