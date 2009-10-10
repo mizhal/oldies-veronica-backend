@@ -35,27 +35,7 @@ content_alias = ['summary','subtitle']
 from model.Feed import Feed
 from dao.PostgresFeedLoader import PostgresFeedLoader 
 
-class Article:
-	def __init__(self):
-		self.content = ''
-		self.title = ''
-		self.create_date = datetime.datetime(1,1,1) ## @eng-point valores que indican desconocido, 1 de enero del ano 1
-		self.pub_date = datetime.datetime(1,1,1)
-		self.fetch_date = datetime.datetime.now()
-		self.feed = None
-		self.link = ''
-		self.id = None
-	
-	def define (self, id, feed, feed_title, link, title, content, published, fetch_date, created):
-		'''id, feed, F.title link, title, content, published, fetch_date, created'''
-		self.content = content.decode("utf8")
-		self.title = title.decode("utf8")
-		self.create_date = created
-		self.pub_date = published
-		self.fetch_date = fetch_date
-		self.feed = feed
-		self.link = link.decode("utf8")
-		self.id = id
+from model.Article import Article
 
 class ArticleLoader:
 	def save(self):

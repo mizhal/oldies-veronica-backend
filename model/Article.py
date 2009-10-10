@@ -1,5 +1,5 @@
 class Article:
-	''' articulo bajado de rss '''
+	''' articulo obtenido mediante rss '''
 	def __init__(self):
 		self.content = ''
 		self.title = ''
@@ -20,6 +20,30 @@ class Article:
 		self.feed = feed
 		self.link = link.decode("utf8")
 		self.id = id
+		
+	def extractIndexEntry(self):
+		''' obtiene un objeto de entrada
+		en el indice FTS para este
+		articulo '''
+		pass
+		
+class ArticleIndexEntry:
+	''' elementos de un articulo que
+	 se indexan en un indice FTS 
+	 '''
+	terms = []
+	title_terms = []
+	relevant_terms = []
+	domain_terms = []
+	tags = []
+	feed_id = None
+	fetch_date = None
+	db_id = None
+	url = None
+	 
+	def __init__(self):
+		pass
+		
 		
 class UserReview:
 	article = None
