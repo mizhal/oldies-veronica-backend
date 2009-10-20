@@ -29,3 +29,6 @@ if __name__ == '__main__':
   vero = connect("host=192.168.1.7 user=%s password=%s dbname=veronica"%(user, passw))
   sync_ff_feeds(vero)
   vero.commit()
+  
+  print "sincronizacion correcta"
+  sys.stdin.readline()
