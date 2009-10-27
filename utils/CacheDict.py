@@ -28,11 +28,11 @@ class LRUCache:
 			q.time = time()
 		else:
 			lru = self.LRU[0]
-			del self.search[lru.name]
+			self.search.pop(lru.name)
 			lru.data = value
 			lru.time = time()
 			lru.name = name
-			self.search[name] = lru
+			self.search[lru.name] = lru
 		self.LRU.sort()
 		
 	def get(self, name, default=None):

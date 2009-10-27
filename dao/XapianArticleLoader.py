@@ -97,17 +97,31 @@ class XapianArticleLoader:
 		results = []
 		feed_loader = PostgresFeedLoader()
 		for m in mset:
-			a = Article()
-			a.fitness = m[xapian.MSET_PERCENT]
-			a.link = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.URL).decode("utf8")
-			a.feed = feed_loader.getById(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FEED_ID))
-			a.title = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.TITLE).decode("utf8")
-			a.fetch_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FETCH_TIMESTAMP)) )
 			try:
-				a.pub_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.PUB_TIMESTAMP)) )
-			except:
-				a.pub_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FETCH_TIMESTAMP)) )
-			a.id = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.ID)
+				a = Article()
+				a.fitness = m[xapian.MSET_PERCENT]
+				a.link = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.URL).decode("utf8")
+				a.feed = feed_loader.getById(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FEED_ID))
+				a.title = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.TITLE).decode("utf8")
+				a.fetch_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FETCH_TIMESTAMP)) )
+				try:
+					a.pub_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.PUB_TIMESTAMP)) )
+				except:
+					a.pub_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FETCH_TIMESTAMP)) )
+				a.id = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.ID)
+			except xapian.DatabaseModifiedError, e:
+				self.reopen_db()
+				a = Article()
+				a.fitness = m[xapian.MSET_PERCENT]
+				a.link = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.URL).decode("utf8")
+				a.feed = feed_loader.getById(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FEED_ID))
+				a.title = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.TITLE).decode("utf8")
+				a.fetch_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FETCH_TIMESTAMP)) )
+				try:
+					a.pub_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.PUB_TIMESTAMP)) )
+				except:
+					a.pub_date = datetime.fromtimestamp( int(m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.FETCH_TIMESTAMP)) )
+				a.id = m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.ID)
 			
 			results.append(a)
 			
