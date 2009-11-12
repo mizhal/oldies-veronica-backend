@@ -2,30 +2,16 @@ from sys import argv
 from psycopg2 import connect
 import feedparser as rss
 
+from dao.PostgresFeedLoader import PostgresFeedLoader
+from dao.PostgresDB import PostgresDB
+from config import credentials
+
 class Veronica:
 	def __init__(self):
-		self.vero = connect("host=localhost user=mizhal password=Alvidran dbname=veronica")
+		self.feed_loader = PostgresFeedLoader()
 		
 	def select(self, tries = 6):
-		''' Seleccion aleatoria de "tries" feeds para vigilar '''
-		#TODO: de momento no tiene en cuenta la afinidad del usuario, pero es necesario incorporarlo
-		vero = self.vero
-
-		bag = []
-		cur = vero.cursor()
-		cur.execute("select id, title, rss from feeds order by (now() - last_read)*freq desc limit %s"%(2*tries,))
-		bag.extend(cur.fetchall()) #fuentes muy productivas
-
-		cur.execute("select id, title, rss from feeds order by last_read asc limit %s"%(2*tries,))
-		bag.extend(cur.fetchall()) #fuentes poco atendidas
-
-		selected = []
-		for i in range(tries):
-			try_ = int(random.uniform(0, len(bag)))
-			s = bag.pop(try_)
-			selected.append(s)
-
-		return selected
+		return self.feed_loader.randomSelect(tries) 
 		
 	def addFeed(self, url):
 		''' anyadir un feed '''
@@ -40,7 +26,7 @@ class Veronica:
 		except:
 			title = ""
 
-		vero = self.vero
+		vero = PostgresDB.getInstance()
 		
 		sql = "insert into feeds(rss, site, title) values('%s','%s','%s')"
 		previous = "select rss from feeds"
@@ -59,5 +45,8 @@ class Veronica:
 		pass
 		
 	def classifyFeed(self, feed, sgcat):
+		pass
+		
+	def rebuildFTSIndex(self):
 		pass
 		
