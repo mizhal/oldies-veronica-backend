@@ -127,3 +127,47 @@ class XapianArticleLoader:
 			
 		return results
 		
+	def mostRelevantTerms(self, article, Nterms):
+		''' extrae los N terminos mas relevantes 
+		del articulo '''
+			
+		## extraccion de terminos
+		term_gen = xapian.TermGenerator()
+		try:
+			untag = replace_acute(decode_htmlentities(strip_html_tags(article.title + " " + article.content)))
+		except UnicodeDecodeError, e:
+			print e
+			#errors.log("XapianArticleLoader", "save", str(e))
+			return
+		term_gen.index_text_without_positions(untag)
+		doc = term_gen.get_document()
+		
+		enquire = xapian.Enquire(self.read_db)
+		enquire.set_query(query)
+
+		# Now, instead of showing the results of the query, we ask Xapian what are the
+		# terms in the index that are most relevant to this search.
+		# Normally, you would use the results to suggest the user possible ways for
+		# refining the search.  I instead abuse this feature to see what are the tags
+		# that are most related to the search results.
+
+		# Use an adaptive cutoff to avoid to pick bad results as references
+		matches = enquire.get_mset(0, 1)
+		topWeight = matches[0].weight
+		enquire.set_cutoff(0, topWeight * 0.7)
+
+		# Select the first 10 documents as the key ones to use to compute relevant
+		# terms
+		rset = xapian.RSet()
+		for m in enquire.get_mset(0, 30):
+				rset.add_document(m[xapian.MSET_DID])
+				
+		# This is the "Expansion set" for the search: the 10 most relevant terms that
+		# match the filter
+		eset = enquire.get_eset(10, rset, None)
+
+		# Print out the results
+		for res in eset:
+				print "%.2f %s" % (res.weight, res.term[2:])
+
+		

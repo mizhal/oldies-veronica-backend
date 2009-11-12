@@ -8,7 +8,6 @@ from config import credentials
 
 class Veronica:
 	def __init__(self):
-		PostgresDB.getInstance().connect(*credentials)
 		self.feed_loader = PostgresFeedLoader()
 		
 	def select(self, tries = 6):
@@ -27,7 +26,7 @@ class Veronica:
 		except:
 			title = ""
 
-		vero = self.vero
+		vero = PostgresDB.getInstance()
 		
 		sql = "insert into feeds(rss, site, title) values('%s','%s','%s')"
 		previous = "select rss from feeds"
@@ -46,5 +45,8 @@ class Veronica:
 		pass
 		
 	def classifyFeed(self, feed, sgcat):
+		pass
+		
+	def rebuildFTSIndex(self):
 		pass
 		

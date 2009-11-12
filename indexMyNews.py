@@ -2,6 +2,14 @@ from sys import argv
 from os import remove
 from os.path import exists
 
+### timeout al leer feeds
+
+import socket
+timeout = 10
+socket.setdefaulttimeout(timeout)
+
+##############################
+
 from veronica.actions.indexMyNews import execute
 
 if __name__ == "__main__":
@@ -11,3 +19,4 @@ if __name__ == "__main__":
 		execute(int(argv[1]), argv[2] != 0)
 	else:
 		execute()
+	

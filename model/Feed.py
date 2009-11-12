@@ -103,9 +103,13 @@ class Feed:
 
 			if pub_date:
 				article.pub_date = datetime(*pub_date[:-2])
+			else:
+				article.pub_date = datetime.now()
 
 			if creation:
 				article.create_date = datetime(*creation[:-2])
+			else:
+				article.create_date = datetime.now()
 
 			article.fetch_date = datetime.now()
 

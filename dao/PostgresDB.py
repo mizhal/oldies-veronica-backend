@@ -25,3 +25,9 @@ class PostgresDB:
 		
 	def commit(self):
 		self.con.commit()
+		
+	def close(self):
+		self.con.close()
+		
+	def __del__(self):
+		self.con.close()

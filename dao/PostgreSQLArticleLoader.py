@@ -63,7 +63,6 @@ class PostgreSQLArticleLoader:
 			#errors.log("PostgreSQLArticleLoader", "save", "fallo link ="+a.link+" id="+str(a.id)+" feed="+str(a.feed_id)+"\n"+str(e))
 			
 	def loadLastNArticles(self, n):
-		## @todo completar esta funcion para implementar un servicio con web.py
 		cur = self.con.cursor()
 		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
 		res = []
@@ -81,6 +80,25 @@ class PostgreSQLArticleLoader:
 			a.id = id
 			res.append(a)
 		return res
+		
+	def loadLastNArticlesFetched(self, n):
+		cur = self.con.cursor()
+		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.fetch_date desc limit %s"%n)
+		res = []
+		floader = PostgresFeedLoader()
+		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
+			feed = floader.getById(feed_id) 
+			a = Article()
+			a.content = content.decode("utf8")
+			a.title = title.decode("utf8")
+			a.create_date = created
+			a.pub_date = published
+			a.fetch_date = fetch_date
+			a.feed = feed
+			a.link = link.decode("utf8")
+			a.id = id
+			res.append(a)
+		return res	
 		
 	def loadLastNArticlesByFeed(self, n, feed_id):
 		## @todo completar esta funcion para implementar un servicio con web.py
