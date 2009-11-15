@@ -26,5 +26,6 @@ def execute(how_many = None, show_details = False):
 
 	for feed in feeds:
 		feed.update(xapian_news_base, show_details)
+		loader.save(feed)
 		
 	PostgresDB.getInstance().commit()

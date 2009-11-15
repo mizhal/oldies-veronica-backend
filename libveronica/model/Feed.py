@@ -9,7 +9,6 @@ import re
 import feedparser
 
 from .Article import Article
-from ..dao.PostgresFeedLoader import PostgresFeedLoader 
 from ..dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader 
 from ..dao.XapianArticleLoader import XapianArticleLoader
 
@@ -22,7 +21,11 @@ class Feed:
 	title = ''
 	response = 0
 	freq = 1
+	latency = 0
 	last_read = datetime.now()
+	last_news = 0
+	created = datetime.now()
+	errors = 0
 	
 	def __init__(self):
 		self.last_read = datetime.now()
@@ -59,10 +62,6 @@ class Feed:
 			print "CANAL:", self.rss
 			print e
 			#errors.log("veronica", "process_feed2", "Canal: %s; %s"%(rss, str(e)))
-			
-		
-		feed_loader = PostgresFeedLoader()
-		feed_loader.setTitle(self, self.title)
 			
 		#extraccion de nuevas noticias
 
@@ -133,8 +132,23 @@ class Feed:
 				if not link in links:
 					new2.append(article)
 					
-		feed_loader.updateFeedRatesAndTimes(self, len(new2), 0.33)
-		feed_loader.setLatency(self,latency)
+		## recalculo de frecuencia
+					
+		## alfa es la decadencia por dia
+		alpha = 0.33
+		produced_news = len(new2)
+		## delta son segundos
+		delta = (feed.last_read - datetime.now()).seconds or 1
+		
+		## las frecuencias son post por dia
+		## un dia tiene 86400 segundos
+		new_freq = produced_news * 86400.0 / delta
+
+		self.freq = alpha * new_freq + (1 - alpha) * self.freq
+
+		self.last_news = produced_news
+		self.last_read = datetime.now()
+		self.latency = latency
 
 		#volcado a indice de xapian
 		loader = XapianArticleLoader(xapian_news_base)
