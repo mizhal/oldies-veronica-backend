@@ -1,4 +1,0 @@
-import sys
-from os.path import join
-
-sys.path.insert(0, join("/", *__file__.split("/")[:-1]))
