@@ -14,7 +14,10 @@ class Veronica:
 		return self.feed_loader.randomSelect(tries) 
 		
 	def addFeed(self, url):
-		''' anyadir un feed '''
+		''' anyadir un feed 
+		
+		@fixme con el usuario con el que accedemos a la base de datos - singleton (vigilante) no es posible insertar feeds.
+		'''
 		data = rss.parse(url)
 		try:
 			site = data.feed.link

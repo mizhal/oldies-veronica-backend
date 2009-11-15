@@ -11,7 +11,7 @@ class PostgresDB:
 		return PostgresDB.singleton
 	
 	def __init__(self):
-		from veronica.config import credentials
+		from ..config import credentials
 		self.con = connect("host=%s dbname=%s user=%s password=%s"%credentials)
 		
 	def connect(self, host, dbname, user, passwd):

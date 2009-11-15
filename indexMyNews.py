@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from sys import argv
 from os import remove
 from os.path import exists
@@ -10,7 +12,7 @@ socket.setdefaulttimeout(timeout)
 
 ##############################
 
-from veronica.actions.indexMyNews import execute
+from libveronica.actions.indexMyNews import execute
 
 if __name__ == "__main__":
 	if len(argv) == 2:
