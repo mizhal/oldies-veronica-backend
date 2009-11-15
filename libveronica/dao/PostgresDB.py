@@ -1,6 +1,8 @@
 from psycopg2 import connect
 from time import strftime
 
+from ..config import credentials
+
 class PostgresDB:
 	singleton = None
 	
@@ -11,7 +13,6 @@ class PostgresDB:
 		return PostgresDB.singleton
 	
 	def __init__(self):
-		from ..config import credentials
 		self.con = connect("host=%s dbname=%s user=%s password=%s"%credentials)
 		
 	def connect(self, host, dbname, user, passwd):
