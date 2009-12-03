@@ -9,8 +9,6 @@ import re
 import feedparser
 
 from .Article import Article
-from ..dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader 
-from ..dao.XapianArticleLoader import XapianArticleLoader
 
 content_alias = ['summary','subtitle']
 
