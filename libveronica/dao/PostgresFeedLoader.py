@@ -140,7 +140,7 @@ class PostgresFeedLoader:
 		
 		return results	
 		
-	COLUMNS = "id, rss, site, title, response, freq, last_read, last_news, created, errors, last_error"
+	COLUMNS = "id, rss, site, title, response, freq, last_read, last_news, created, errors, last_err"
 		
 	def getAll(self):
 		return self.loadMany("select %s from feeds" % PostgresFeedLoader.COLUMNS)
