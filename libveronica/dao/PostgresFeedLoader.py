@@ -65,7 +65,7 @@ class PostgresFeedLoader:
 									   strftime("%Y-%m-%d %H:%M:%S",feed.last_read.timetuple()),
 									   strftime("%Y-%m-%d %H:%M:%S",feed.created.timetuple()),
 									   feed.errors,
-									   feed.last_error.replace("'","''"),
+									   feed.last_error != None and feed.last_error.replace("'","''") or '',
 									   feed.last_news
 									   )
 						    )
@@ -91,7 +91,7 @@ class PostgresFeedLoader:
 									   strftime("%Y-%m-%d %H:%M:%S",feed.last_read.timetuple()),
 									   strftime("%Y-%m-%d %H:%M:%S",feed.created.timetuple()),
 									   feed.errors,
-									   feed.last_error.replace("'","''"),
+									   feed.last_error != None and feed.last_error.replace("'","''") or '',
 									   feed.last_news,
 									   feed.id
 									   )
