@@ -1,8 +1,6 @@
 from datetime import datetime
 import calendar
 
-from ..dao.PostgresFeedLoader import PostgresFeedLoader 
-
 class Article:
 	''' articulo bajado de rss '''
 	def __init__(self):
@@ -27,9 +25,8 @@ class Article:
 		self.link = link.decode("utf8")
 		self.id = id
 		
-	def loadFeed(self, feed_id):
-		floader = PostgresFeedLoader()
-		self.feed = floader.getById(feed_id) 
+	def loadFeed(self, feed_id, database_mapper):
+		self.feed = database_mapper.getById(feed_id) 
 		
 	def getFetchUnixTime(self):
 		return calendar.timegm(self.fetch_date.timetuple())

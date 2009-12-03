@@ -4,9 +4,13 @@ import re
 from PostgresDB import PostgresDB
 from ..model.Article import Article
 
+from PostgresFeedLoder import PostgresFeedLoader
+
 class PostgreSQLArticleLoader:
 	insert = "insert into articles(id, feed, link, title, content, published, fetch_date, created) values (%s, %s, '%s', '%s', '%s', '%s', '%s', '%s')"
 	update = "update articles set title = '%s', content = '%s', published = '%s', fetch_date = '%s' where id = %s"
+	
+	feed_mapper = PostgresFeedLoader()
 	
 	def __init__(self):
 		self.con = PostgresDB.getInstance()
@@ -73,7 +77,7 @@ class PostgreSQLArticleLoader:
 			a.create_date = created
 			a.pub_date = published
 			a.fetch_date = fetch_date
-			a.loadFeed(feed_id)
+			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
 			a.link = link.decode("utf8")
 			a.id = id
 			res.append(a)
@@ -90,7 +94,7 @@ class PostgreSQLArticleLoader:
 			a.create_date = created
 			a.pub_date = published
 			a.fetch_date = fetch_date
-			a.loadFeed(feed_id)
+			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
 			a.link = link.decode("utf8")
 			a.id = id
 			res.append(a)
@@ -108,7 +112,7 @@ class PostgreSQLArticleLoader:
 			a.create_date = created
 			a.pub_date = published
 			a.fetch_date = fetch_date
-			a.loadFeed(feed_id)
+			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
 			a.link = link.decode("utf8")
 			a.id = id
 			res.append(a)
