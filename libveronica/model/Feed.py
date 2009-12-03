@@ -123,11 +123,11 @@ class Feed:
 		
 		for link, article in new.iteritems():
 			if isinstance(link, unicode):
-				llz = link.encode("utf-8")
-				if not llz in links:
+				if not link in links:
 					new2.append(article)
 			else:	
-				if not link in links:
+				llz = unicode(llz)
+				if not llz in links:
 					new2.append(article)
 					
 		## recalculo de frecuencia
