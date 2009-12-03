@@ -134,7 +134,7 @@ class Feed:
 		alpha = 0.33
 		produced_news = len(new2)
 		## delta son segundos
-		delta = (feed.last_read - datetime.now()).seconds or 1
+		delta = (self.last_read - datetime.now()).seconds or 1
 		
 		## las frecuencias son post por dia
 		## un dia tiene 86400 segundos
