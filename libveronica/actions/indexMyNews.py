@@ -5,7 +5,9 @@ import xapian
 
 from ..config import credentials, xapian_news_base
 from ..dao.PostgresFeedLoader import PostgresFeedLoader
+from ..dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader
 from ..dao.PostgresDB import PostgresDB
+
 from ..dao.XapianArticleLoader import XapianArticleLoader
 
 def execute(how_many = None, show_details = False):
@@ -26,7 +28,7 @@ def execute(how_many = None, show_details = False):
 		feeds = loader.randomSelect()
 
 	fts_index_mapper = XapianArticleLoader(xapian_news_base)
-	database_mapper = PostgresFeedLoader()
+	database_mapper = PostgreSQLArticleLoader()
 	for feed in feeds:
 		feed.update(fts_index_mapper, database_mapper, show_details)
 		loader.save(feed)
