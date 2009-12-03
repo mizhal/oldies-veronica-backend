@@ -24,6 +24,7 @@ class Feed:
 	last_news = 0
 	created = datetime.now()
 	errors = 0
+	last_error = ''
 	
 	def __init__(self):
 		self.last_read = datetime.now()

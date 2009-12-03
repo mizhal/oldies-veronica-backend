@@ -114,6 +114,7 @@ class PostgresFeedLoader:
 		f.last_news = row[7]
 		f.created = row[8]
 		f.errors = row[9]
+		f.last_error = row[10]
 		
 		return f
 		
@@ -134,11 +135,12 @@ class PostgresFeedLoader:
 			f.last_news = row[7]
 			f.created = row[8]
 			f.errors = row[9]
+			f.last_error = row[10]
 			results.append(f)
 		
 		return results	
 		
-	COLUMNS = "id, rss, site, title, response, freq, last_read, last_news, created, errors"
+	COLUMNS = "id, rss, site, title, response, freq, last_read, last_news, created, errors, last_error"
 		
 	def getAll(self):
 		return self.loadMany("select %s from feeds" % PostgresFeedLoader.COLUMNS)
