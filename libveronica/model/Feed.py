@@ -28,6 +28,7 @@ class Feed:
 	
 	def __init__(self):
 		self.last_read = datetime.now()
+		self.last_error = ''
 		
 	def update(self, fts_index_mapper, database_mapper, print_news = False):
 		'''process feed and save news in Xapian index'''
