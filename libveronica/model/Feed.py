@@ -31,7 +31,8 @@ class Feed:
 		self.last_error = ''
 		
 	def update(self, fts_index_mapper, database_mapper, print_news = False):
-		'''process feed and save news in Xapian index'''
+		'''process feed, compare with archive to select news and save
+		in relational database and in full text index'''
 		ptime = 0
 		now = strftime("%Y-%m-%d %H:%M:%S",datetime.now().timetuple())
 		try:
