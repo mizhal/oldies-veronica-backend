@@ -6,6 +6,7 @@ import xapian
 from ..config import credentials, xapian_news_base
 from ..dao.PostgresFeedLoader import PostgresFeedLoader
 from ..dao.PostgresDB import PostgresDB
+from ..dao.XapianArticleLoader import XapianArticleLoader
 
 def execute(how_many = None, show_details = False):
 	PostgresDB.getInstance().connect(*credentials)
