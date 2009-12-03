@@ -30,7 +30,7 @@ class Feed:
 	def __init__(self):
 		self.last_read = datetime.now()
 		
-	def update(self, xapian_news_base, print_news = False):
+	def update(self, fts_index_mapper, database_mapper, print_news = False):
 		'''process feed and save news in Xapian index'''
 		ptime = 0
 		now = strftime("%Y-%m-%d %H:%M:%S",datetime.now().timetuple())
@@ -117,9 +117,7 @@ class Feed:
 			
 		#chequeo de duplicados
 		#ENG-POINT: recuperamos de la base de datos tantas noticias como nuevas tenemos, ordenadas por fecha descendente.
-		loaderDB = PostgreSQLArticleLoader()
-		
-		links = loaderDB.getNLastURIs(len(data.entries)*2, self.id)
+		links = database_mapper.getNLastURIs(len(data.entries)*2, self.id)
 			
 		new2 = []
 		
@@ -150,8 +148,8 @@ class Feed:
 		self.last_read = datetime.now()
 		self.latency = latency
 
-		#volcado a indice de xapian
-		loader = XapianArticleLoader(xapian_news_base)
+		#volcado a indice FTS
+
 		if print_news:
 			try:
 				print "Actualizando ", self.title
@@ -159,14 +157,14 @@ class Feed:
 				print e
 				
 		for a in new2:
-			loaderDB.assignID(a)
-			loaderDB.save(a)
-			loader.save(a)
+			database_mapper.assignID(a)
+			database_mapper.save(a)
+			fts_index_mapper.save(a)
 			if print_news:
 				try:
 					print "Descargado: ", a.title, "\n\tpublicado:", a.pub_date
 				except UnicodeEncodeError, e:
 					print e
-		loader.flush()
+		fts_index_mapper.flush()
 		
 		self.last_read = datetime.now()

@@ -3,7 +3,6 @@ import re
 
 from PostgresDB import PostgresDB
 from ..model.Article import Article
-from PostgresFeedLoader import PostgresFeedLoader 
 
 class PostgreSQLArticleLoader:
 	insert = "insert into articles(id, feed, link, title, content, published, fetch_date, created) values (%s, %s, '%s', '%s', '%s', '%s', '%s', '%s')"
@@ -66,16 +65,15 @@ class PostgreSQLArticleLoader:
 		cur = self.con.cursor()
 		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
 		res = []
-		floader = PostgresFeedLoader()
+		
 		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
-			feed = floader.getById(feed_id) 
 			a = Article()
 			a.content = content.decode("utf8")
 			a.title = title.decode("utf8")
 			a.create_date = created
 			a.pub_date = published
 			a.fetch_date = fetch_date
-			a.feed = feed
+			a.loadFeed(feed_id)
 			a.link = link.decode("utf8")
 			a.id = id
 			res.append(a)
@@ -85,16 +83,14 @@ class PostgreSQLArticleLoader:
 		cur = self.con.cursor()
 		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.fetch_date desc limit %s"%n)
 		res = []
-		floader = PostgresFeedLoader()
 		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
-			feed = floader.getById(feed_id) 
 			a = Article()
 			a.content = content.decode("utf8")
 			a.title = title.decode("utf8")
 			a.create_date = created
 			a.pub_date = published
 			a.fetch_date = fetch_date
-			a.feed = feed
+			a.loadFeed(feed_id)
 			a.link = link.decode("utf8")
 			a.id = id
 			res.append(a)
@@ -105,16 +101,14 @@ class PostgreSQLArticleLoader:
 		cur = self.con.cursor()
 		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc limit %s"%(feed_id, n))
 		res = []
-		floader = PostgresFeedLoader()
 		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
-			feed = floader.getById(feed_id) 
 			a = Article()
 			a.content = content.decode("utf8")
 			a.title = title.decode("utf8")
 			a.create_date = created
 			a.pub_date = published
 			a.fetch_date = fetch_date
-			a.feed = feed
+			a.loadFeed(feed_id)
 			a.link = link.decode("utf8")
 			a.id = id
 			res.append(a)

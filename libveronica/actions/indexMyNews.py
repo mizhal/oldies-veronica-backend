@@ -24,8 +24,10 @@ def execute(how_many = None, show_details = False):
 	else:
 		feeds = loader.randomSelect()
 
+	fts_index_mapper = XapianArticleLoader(xapian_news_base)
+	database_mapper = PostgresFeedLoader()
 	for feed in feeds:
-		feed.update(xapian_news_base, show_details)
+		feed.update(fts_index_mapper, database_mapper, show_details)
 		loader.save(feed)
 		
 	PostgresDB.getInstance().commit()
