@@ -4,7 +4,7 @@ import re
 from PostgresDB import PostgresDB
 from ..model.Article import Article
 
-from PostgresFeedLoder import PostgresFeedLoader
+from PostgresFeedLoader import PostgresFeedLoader
 
 class PostgreSQLArticleLoader:
 	insert = "insert into articles(id, feed, link, title, content, published, fetch_date, created) values (%s, %s, '%s', '%s', '%s', '%s', '%s', '%s')"
