@@ -2,6 +2,7 @@ from os.path import join, split
 from time import strftime
 from datetime import datetime
 from exceptions import Exception
+import random
 
 from md5 import md5
 
