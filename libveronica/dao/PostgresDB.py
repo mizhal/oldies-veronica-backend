@@ -91,7 +91,7 @@ class PostgresDBPrivileged(PostgresDBReader):
 	def getInstance(user, session_token):
 		if PostgresDBPrivileged.singleton is None:
 			PostgresDBPrivileged.singleton = PostgresDBPrivileged()
-		if self.validateUser(user, session_token):
+		if PostgresDBReader.getInstance().validateUser(user, session_token):
 			return PostgresDBPrivileged.singleton
 		else:
 			raise NotEnoughPrivileges()
