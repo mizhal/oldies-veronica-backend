@@ -9,7 +9,7 @@ from psycopg2 import connect
 
 from ..utils.readini import IniFile
 
-local_dir, filename = split(__file__)[0]
+local_dir, filename = split(__file__)
 
 config = IniFile(join(local_dir, "dbconfig.ini"))
 
