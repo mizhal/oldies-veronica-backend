@@ -45,7 +45,8 @@ class PostgreSQLArticleLoader:
 		self.session_token =  PostgresDBReader.getInstance().openSession(user, password)
 		
 	def save(self, a):
-		cur = PostgresDBPrivileged.getInstance(self.user, self.session_token).cursor()
+		mapper = PostgresDBPrivileged.getInstance(self.user, self.session_token)
+		cur = mapper.cursor()
 		try:
 			if a.isnew:
 				cur.execute(PostgreSQLArticleLoader.insert % (a.id, a.feed.id, a.link, 
@@ -66,10 +67,9 @@ class PostgreSQLArticleLoader:
 				)
 		except Exception, e:
 			print "fallo ", str(e), " - link =", a.link," id=",a.id, " feed=",a.feed.id
-			PostgresDBPrivileged.getInstance(self.user, self.session_token).commit()
 			#errors.log("PostgreSQLArticleLoader", "save", "fallo link ="+a.link+" id="+str(a.id)+" feed="+str(a.feed_id)+"\n"+str(e))
 		
-		PostgresDBPrivileged.getInstance(self.user, self.session_token).commit()
+		mapper.commit()
 			
 	def loadLastNArticles(self, n):
 		cur = PostgresDBReader.getInstance().cursor()
