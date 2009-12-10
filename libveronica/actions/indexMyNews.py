@@ -28,4 +28,3 @@ def execute(how_many = None, show_details = False):
 	database_mapper.setCredentials("cron","ToAruMajutsuNoIndex")
 	for feed in feeds:
 		feed.update(fts_index_mapper, database_mapper, show_details)
-		loader.save(feed)
