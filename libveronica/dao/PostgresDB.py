@@ -1,6 +1,5 @@
 from os.path import join, split
-from time import strftime
-from datetime import datetime
+from time import strftime, time
 from exceptions import Exception
 import random
 
@@ -66,7 +65,7 @@ class PostgresDBReader:
 			while PostgresDBReader.SESSION_TOKENS.has_key(token):
 				token = self._genSessionToken()
 			
-			PostgresDBReader.SESSION_TOKENS[token] = (user, datetime.now())
+			PostgresDBReader.SESSION_TOKENS[token] = (user, time())
 				
 			return token
 		else:
@@ -75,9 +74,12 @@ class PostgresDBReader:
 	def validateUser(self, user, session_token):
 		q = PostgresDBReader.SESSION_TOKENS.get(session_token, None)
 		if q:
-			if q[0] == user and (datetime.now() - q[1]).seconds < SESSION_TIMEOUT:
-				PostgresDBReader.SESSION_TOKENS[session_token] = (user, datetime.now())
-				return True
+			if q[0] == user:
+				if time() - q[1] < SESSION_TIMEOUT:
+					PostgresDBReader.SESSION_TOKENS[session_token] = (user, time())
+					return True
+				else:
+					del PostgresDBReader.SESSION_TOKENS[session_token]
 			else:
 				return False
 		
