@@ -25,6 +25,7 @@ def execute(how_many = None, show_details = False):
 
 	fts_index_mapper = XapianArticleLoader(xapian_news_base)
 	database_mapper = PostgreSQLArticleLoader()
+	database_mapper.setCredentials("cron","ToAruMajutsuNoIndex")
 	for feed in feeds:
 		feed.update(fts_index_mapper, database_mapper, show_details)
 		loader.save(feed)

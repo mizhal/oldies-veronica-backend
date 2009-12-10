@@ -59,7 +59,7 @@ class PostgresDBReader:
 		
 	def openSession(self, user, password):
 		cur = self.cursor()
-		cur.execute("select * from users where user=? and password=?", user, password)
+		cur.execute("select * from users where user=? and password=?", user, md5(password).hexdigest())
 		if len(cur.fetchall()) > 0:
 			token = self._genSessionToken()
 			while PostgresDBReader.SESSION_TOKENS.has_key(token):
