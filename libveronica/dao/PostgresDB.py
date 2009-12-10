@@ -55,7 +55,7 @@ class PostgresDBReader:
 	def _genSessionToken(self):
 		letters = []
 		for i in range(128):
-			letters.append(random.randint(ord("A"), ord("Z")))
+			letters.append(chr(random.randint(ord("A"), ord("Z"))))
 		return "".join(letters)
 		
 	def openSession(self, user, password):
