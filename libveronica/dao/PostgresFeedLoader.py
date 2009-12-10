@@ -9,6 +9,8 @@ from .PostgresDB import PostgresDBReader, PostgresDBPrivileged
 		
 class PostgresFeedLoader:
 	cache = LRUCache(40)
+	user = None
+	session_token = None
 	
 	def _assignID(self, feed):
 		if feed.id is None:
@@ -29,9 +31,15 @@ class PostgresFeedLoader:
 			else:
 				errors.log("PostgresFeedLoader", "assignID", "error al obtener el identificador")
 				raise "error al obtener el identificador"
+	
+				
+	def setCredentials(self, user, password):
+		self.user = user
+		self.session_token =  PostgresDBReader.getInstance().openSession(user, password)
+		
 		
 	def save(self, feed):
-		cur = PostgresDBPrivileged.getInstance().cursor()
+		cur = PostgresDBPrivileged.getInstance(self.user, self.session_token).cursor()
 		if not feed.id:
 			kind = self._assignID(feed)
 			if kind == 'new':

@@ -3,15 +3,13 @@ from os.path import exists
 
 import xapian
 
-from ..config import credentials, xapian_news_base
+from ..config import xapian_news_base
 from ..dao.PostgresFeedLoader import PostgresFeedLoader
 from ..dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader
-from ..dao.PostgresDB import PostgresDB
 
 from ..dao.XapianArticleLoader import XapianArticleLoader
 
 def execute(how_many = None, show_details = False):
-	PostgresDB.getInstance().connect(*credentials)
 	sqldb = PostgresDB.getInstance()
 
 	loader = PostgresFeedLoader()
@@ -32,5 +30,3 @@ def execute(how_many = None, show_details = False):
 	for feed in feeds:
 		feed.update(fts_index_mapper, database_mapper, show_details)
 		loader.save(feed)
-		
-	PostgresDB.getInstance().commit()

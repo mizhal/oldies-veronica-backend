@@ -9,6 +9,9 @@ from PostgresFeedLoader import PostgresFeedLoader
 class PostgreSQLArticleLoader:
 	insert = "insert into articles(id, feed, link, title, content, published, fetch_date, created) values (%s, %s, '%s', '%s', '%s', '%s', '%s', '%s')"
 	update = "update articles set title = '%s', content = '%s', published = '%s', fetch_date = '%s' where id = %s"
+	user = None
+	session_token = None	
+	
 	
 	feed_mapper = PostgresFeedLoader()
 		
@@ -36,9 +39,13 @@ class PostgreSQLArticleLoader:
 		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute("select link from articles where feed = %s order by fetch_date desc limit %s"%(feed_id, n))
 		return [i[0].decode("utf8") for i in cur.fetchall()]
+			
+	def setCredentials(self, user, password):
+		self.user = user
+		self.session_token =  PostgresDBReader.getInstance().openSession(user, password)
 		
 	def save(self, a):
-		cur = PostgresDBPrivileged.getInstance().cursor()
+		cur = PostgresDBPrivileged.getInstance(self.user, self.session_token).cursor()
 		try:
 			if a.isnew:
 				cur.execute(PostgreSQLArticleLoader.insert % (a.id, a.feed.id, a.link, 
