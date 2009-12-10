@@ -10,8 +10,6 @@ from ..dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader
 from ..dao.XapianArticleLoader import XapianArticleLoader
 
 def execute(how_many = None, show_details = False):
-	sqldb = PostgresDB.getInstance()
-
 	loader = PostgresFeedLoader()
 
 	#seleccion de los feeds a consultar
