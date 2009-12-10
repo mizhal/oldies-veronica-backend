@@ -1,10 +1,10 @@
 from time import strftime
 import re
 
-from PostgresDB import PostgresDB
+from PostgresDB import PostgresDBReader, PostgresDBPrivileged
 from ..model.Article import Article
 
-from PostgresFeedLoader import PostgresDBReader, PostgresDBPrivileged
+from PostgresFeedLoader import PostgresFeedLoader
 
 class PostgreSQLArticleLoader:
 	insert = "insert into articles(id, feed, link, title, content, published, fetch_date, created) values (%s, %s, '%s', '%s', '%s', '%s', '%s', '%s')"
