@@ -68,7 +68,7 @@ class PostgresDBReader:
 			PostgresDBReader.SESSION_TOKENS[token] = (user, datetime.now())
 				
 			return token
-		else
+		else:
 			return False
 			
 	def validateUser(self, user, session_token):
