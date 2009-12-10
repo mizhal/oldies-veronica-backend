@@ -75,8 +75,8 @@ class PostgresDBReader:
 	def validateUser(self, user, session_token):
 		q = PostgresDBReader.SESSION_TOKENS.get(session_token, None)
 		if q:
-			if q[0] == user and (datetime.now() - q[2]).seconds < SESSION_TIMEOUT:
-				PostgresDBReader.SESSION_TOKENS[token] = (user, datetime.now())
+			if q[0] == user and (datetime.now() - q[1]).seconds < SESSION_TIMEOUT:
+				PostgresDBReader.SESSION_TOKENS[session_token] = (user, datetime.now())
 				return True
 			else:
 				return False
