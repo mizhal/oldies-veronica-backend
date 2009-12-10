@@ -4,20 +4,17 @@ import re
 from PostgresDB import PostgresDB
 from ..model.Article import Article
 
-from PostgresFeedLoader import PostgresFeedLoader
+from PostgresFeedLoader import PostgresDBReader, PostgresDBPrivileged
 
 class PostgreSQLArticleLoader:
 	insert = "insert into articles(id, feed, link, title, content, published, fetch_date, created) values (%s, %s, '%s', '%s', '%s', '%s', '%s', '%s')"
 	update = "update articles set title = '%s', content = '%s', published = '%s', fetch_date = '%s' where id = %s"
 	
 	feed_mapper = PostgresFeedLoader()
-	
-	def __init__(self):
-		self.con = PostgresDB.getInstance()
 		
 	def assignID(self, article):
 		if article.id is None:
-			cur = self.con.cursor()
+			cur = PostgresDBReader.getInstance().cursor()
 			try:
 				cur.execute(u"select id from articles where link = '%s' and feed = %s union select nextval('art_seq')"%(article.link, article.feed.id))
 			except:
@@ -36,12 +33,12 @@ class PostgreSQLArticleLoader:
 				raise "error al obtener el identificador"
 		
 	def getNLastURIs(self, n, feed_id):
-		cur = self.con.cursor()
+		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute("select link from articles where feed = %s order by fetch_date desc limit %s"%(feed_id, n))
 		return [i[0].decode("utf8") for i in cur.fetchall()]
 		
 	def save(self, a):
-		cur = self.con.cursor()
+		cur = PostgresDBPrivileged.getInstance().cursor()
 		try:
 			if a.isnew:
 				cur.execute(PostgreSQLArticleLoader.insert % (a.id, a.feed.id, a.link, 
@@ -66,7 +63,7 @@ class PostgreSQLArticleLoader:
 			#errors.log("PostgreSQLArticleLoader", "save", "fallo link ="+a.link+" id="+str(a.id)+" feed="+str(a.feed_id)+"\n"+str(e))
 			
 	def loadLastNArticles(self, n):
-		cur = self.con.cursor()
+		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
 		res = []
 		
@@ -84,7 +81,7 @@ class PostgreSQLArticleLoader:
 		return res
 		
 	def loadLastNArticlesFetched(self, n):
-		cur = self.con.cursor()
+		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.fetch_date desc limit %s"%n)
 		res = []
 		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
@@ -102,7 +99,7 @@ class PostgreSQLArticleLoader:
 		
 	def loadLastNArticlesByFeed(self, n, feed_id):
 		## @todo completar esta funcion para implementar un servicio con web.py
-		cur = self.con.cursor()
+		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc limit %s"%(feed_id, n))
 		res = []
 		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():

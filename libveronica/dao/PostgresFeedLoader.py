@@ -5,7 +5,7 @@ from datetime import datetime
 from ..utils.CacheDict import LRUCache
 from ..model.Feed import Feed
 
-from .PostgresDB import PostgresDB
+from .PostgresDB import PostgresDBReader, PostgresDBPrivileged
 		
 class PostgresFeedLoader:
 	cache = LRUCache(40)
@@ -31,7 +31,7 @@ class PostgresFeedLoader:
 				raise "error al obtener el identificador"
 		
 	def save(self, feed):
-		cur = PostgresDB.getInstance().cursor()
+		cur = PostgresDBPrivileged.getInstance().cursor()
 		if not feed.id:
 			kind = self._assignID(feed)
 			if kind == 'new':
@@ -99,7 +99,7 @@ class PostgresFeedLoader:
 
 		
 	def loadSingle(self, sql):
-		cur = PostgresDB.getInstance().cursor()
+		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute(sql)
 		row = cur.fetchone()
 		
@@ -119,7 +119,7 @@ class PostgresFeedLoader:
 		return f
 		
 	def loadMany(self, sql):
-		cur = PostgresDB.getInstance().cursor()
+		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute(sql)
 		results = []
 
