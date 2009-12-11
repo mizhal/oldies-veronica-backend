@@ -40,9 +40,9 @@ class PostgreSQLArticleLoader:
 		cur.execute("select link from articles where feed = %s order by fetch_date desc limit %s"%(feed_id, n))
 		return [i[0].decode("utf8") for i in cur.fetchall()]
 			
-	def setCredentials(self, user, password):
+	def setCredentials(self, user, session_token):
 		self.user = user
-		self.session_token =  PostgresDBReader.getInstance().openSession(user, password)
+		self.session_token =  session_token
 		
 	def save(self, a):
 		mapper = PostgresDBPrivileged.getInstance(self.user, self.session_token)

@@ -3,8 +3,10 @@ from psycopg2 import connect
 import feedparser as rss
 
 from dao.PostgresFeedLoader import PostgresFeedLoader
-from dao.PostgresDB import PostgresDB
+from dao.PostgresDB import PostgresDBReader
 from config import credentials
+
+from model.Feed import Feed
 
 class Veronica:
 	def __init__(self):
@@ -13,36 +15,32 @@ class Veronica:
 	def select(self, tries = 6):
 		return self.feed_loader.randomSelect(tries) 
 		
-	def addFeed(self, url):
+	def login(user, password):
+		return PostgresDBReader.getInstance().openSession(user, password)
+		
+	def addFeed(self, user, session_token, url, title = None, site = None):
 		''' anyadir un feed 
-		
-		@fixme con el usuario con el que accedemos a la base de datos - singleton (vigilante) no es posible insertar feeds.
 		'''
+		new = Feed()
+		new.rss = url
+		
 		data = rss.parse(url)
-		try:
-			site = data.feed.link
-		except:
-			site = ""
+		if site is None:
+			try:
+				new.site = data.feed.link
+			except:
+				new.site = ""
 			
-		try:
-			title = data.feed.title
-		except:
-			title = ""
-
-		vero = PostgresDB.getInstance()
+		if title is None:
+			try:
+				new.title = data.feed.title
+			except:
+				new.title = ""
+			
+		feed_loader = PostgresFeedLoader()
+		feed_loader.setCredentials(user, session_token)
 		
-		sql = "insert into feeds(rss, site, title) values('%s','%s','%s')"
-		previous = "select rss from feeds"
-		cur = vero.cursor()
-		cur.execute(previous)
-		prev = [i[0] for i in cur.fetchall()]
-
-		if url not in prev:
-			cur.execute(sql % (url, site, title))
-		else:
-			raise "la fuente ya existe"
-		
-		vero.commit()
+		feed_loader.save(new)
 		
 	def deleteFeed(self, url):
 		pass
@@ -52,4 +50,24 @@ class Veronica:
 		
 	def rebuildFTSIndex(self):
 		pass
+		
+	def gatherNews(self, user, session_token, how_many = None, show_details = False):
+		loader = PostgresFeedLoader()
+
+		#seleccion de los feeds a consultar
+		feeds = None
+
+		if how_many:
+			if how_many != 0:
+				feeds = loader.randomSelect(how_many)
+			else:
+				feeds = loader.getAll()
+		else:
+			feeds = loader.randomSelect()
+
+		fts_index_mapper = XapianArticleLoader(xapian_news_base)
+		database_mapper = PostgreSQLArticleLoader()
+		database_mapper.setCredentials(user, session_token)
+		for feed in feeds:
+			feed.update(fts_index_mapper, database_mapper, show_details)
 		

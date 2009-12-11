@@ -33,13 +33,14 @@ class PostgresFeedLoader:
 				raise "error al obtener el identificador"
 	
 				
-	def setCredentials(self, user, password):
+	def setCredentials(self, user, session_token):
 		self.user = user
-		self.session_token =  PostgresDBReader.getInstance().openSession(user, password)
+		self.session_token =  session_token
 		
 		
 	def save(self, feed):
-		cur = PostgresDBPrivileged.getInstance(self.user, self.session_token).cursor()
+		db = PostgresDBPrivileged.getInstance(self.user, self.session_token)
+		cur = db.cursor()
 		if not feed.id:
 			kind = self._assignID(feed)
 			if kind == 'new':
@@ -104,7 +105,7 @@ class PostgresFeedLoader:
 									   feed.id
 									   )
 				    )
-
+		db.commit()
 		
 	def loadSingle(self, sql):
 		cur = PostgresDBReader.getInstance().cursor()
