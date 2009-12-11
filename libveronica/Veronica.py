@@ -63,10 +63,10 @@ class Veronica:
 		
 		if delete_news:
 			artloader = DBArticleLoader()
-			artloader.setCredentials(user, session_token)
-			artloader.deleteArticlesFromFeed(feed)
 			fts_artloader = FTSArticleLoader(xapian_news_base)
 			fts_artloader.deleteArticlesFromFeed(feed, artloader)
+			artloader.setCredentials(user, session_token)
+			artloader.deleteArticlesFromFeed(feed)
 		
 	def rebuildFTSIndex(self, user, session_token):
 		pass
