@@ -3,6 +3,7 @@ from psycopg2 import connect
 import feedparser as rss
 
 from dao.XapianArticleLoader import XapianArticleLoader
+from dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader
 from dao.PostgresFeedLoader import PostgresFeedLoader
 from dao.PostgresDB import PostgresDBReader
 from config import credentials, xapian_news_base
