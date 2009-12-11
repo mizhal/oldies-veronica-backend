@@ -37,7 +37,6 @@ class PostgresFeedLoader:
 		self.user = user
 		self.session_token =  session_token
 		
-		
 	def save(self, feed):
 		db = PostgresDBPrivileged.getInstance(self.user, self.session_token)
 		cur = db.cursor()
@@ -55,7 +54,8 @@ class PostgresFeedLoader:
 						    "created, "
 						    "errors, "
 						    "last_err, "
-						    "last_news) " 
+						    "last_news, "
+						    "veto ) "
 						    "values("
 						    "'%s', "
 						    "%s, "
@@ -66,7 +66,7 @@ class PostgresFeedLoader:
 						    "'%s', "
 						    "%s, "
 						    "'%s', "
-						    "%s)" % (feed.title.replace("'","''"),
+						    "%s, %s)" % (feed.title.replace("'","''"),
 									   feed.latency,
 									   feed.freq,
 									   feed.rss.replace("'","''"),
@@ -75,7 +75,8 @@ class PostgresFeedLoader:
 									   strftime("%Y-%m-%d %H:%M:%S",feed.created.timetuple()),
 									   feed.errors,
 									   feed.last_error != None and feed.last_error.replace("'","''") or '',
-									   feed.last_news
+									   feed.last_news,
+									   feed.veto
 									   )
 						    )
 				return
@@ -91,7 +92,8 @@ class PostgresFeedLoader:
 				    "created = '%s', "
 				    "errors = %s, "
 				    "last_err = '%s', "
-				    "last_news = %s "
+				    "last_news = %s, "
+				    "veto = %s "
 				    "where id = %s" % (feed.title.replace("'","''"),
 									   feed.latency,
 									   feed.freq,
@@ -102,11 +104,12 @@ class PostgresFeedLoader:
 									   feed.errors,
 									   feed.last_error != None and feed.last_error.replace("'","''") or '',
 									   feed.last_news,
+									   feed.veto,
 									   feed.id
 									   )
 				    )
 		db.commit()
-		
+
 	def loadSingle(self, sql):
 		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute(sql)
@@ -124,6 +127,7 @@ class PostgresFeedLoader:
 		f.created = row[8]
 		f.errors = row[9]
 		f.last_error = row[10]
+		f.veto = row[11]
 		
 		return f
 		
@@ -145,11 +149,12 @@ class PostgresFeedLoader:
 			f.created = row[8]
 			f.errors = row[9]
 			f.last_error = row[10]
+			f.veto = row[11]
 			results.append(f)
 		
 		return results	
 		
-	COLUMNS = "id, rss, site, title, response, freq, last_read, last_news, created, errors, last_err"
+	COLUMNS = "id, rss, site, title, response, freq, last_read, last_news, created, errors, last_err, veto"
 		
 	def getAll(self):
 		return self.loadMany("select %s from feeds" % PostgresFeedLoader.COLUMNS)

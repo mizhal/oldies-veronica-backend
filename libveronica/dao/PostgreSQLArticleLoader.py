@@ -70,7 +70,13 @@ class PostgreSQLArticleLoader:
 			#errors.log("PostgreSQLArticleLoader", "save", "fallo link ="+a.link+" id="+str(a.id)+" feed="+str(a.feed_id)+"\n"+str(e))
 		
 		mapper.commit()
-			
+		
+	def deleteArticlesFromFeed(self, feed):
+		mapper = PostgresDBPrivileged.getInstance(self.user, self.session_token)
+		cur = mapper.cursor()
+		cur.execute("delete from articles where feed = %s", feed.id)
+		mapper.commit()
+
 	def loadLastNArticles(self, n):
 		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
@@ -107,9 +113,25 @@ class PostgreSQLArticleLoader:
 		return res	
 		
 	def loadLastNArticlesByFeed(self, n, feed_id):
-		## @todo completar esta funcion para implementar un servicio con web.py
 		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc limit %s"%(feed_id, n))
+		res = []
+		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
+			a = Article()
+			a.content = content.decode("utf8")
+			a.title = title.decode("utf8")
+			a.create_date = created
+			a.pub_date = published
+			a.fetch_date = fetch_date
+			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
+			a.link = link.decode("utf8")
+			a.id = id
+			res.append(a)
+		return res
+		
+	def loadArticlesByFeed(self, n, feed_id, offset, limit):
+		cur = PostgresDBReader.getInstance().cursor()
+		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc offset %s limit %s"%(feed_id, offset*limit, limit))
 		res = []
 		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
 			a = Article()

@@ -50,6 +50,20 @@ class Veronica:
 	def classifyFeed(self, feed, sgcat):
 		pass
 		
+	def vetoFeed(self, feed, delete_news = False):
+		feed.veto = True
+		feed_loader = PostgresFeedLoader()
+		feed_loader.setCredentials(user, session_token)
+		
+		feed_loader.save(feed)
+		
+		if delete_news:
+			artloader = PostgreSQLArticleLoader()
+			artloader.setCredentials(user, session_token)
+			artloader.deleteArticlesFromFeed(feed)
+			fts_artloader = XapianArticleLoader(xapian_news_base)
+			fts_artloader.deleteArticlesFromFeed(feed, artloader)
+		
 	def rebuildFTSIndex(self):
 		pass
 		

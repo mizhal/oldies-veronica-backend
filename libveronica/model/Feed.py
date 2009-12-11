@@ -25,6 +25,7 @@ class Feed:
 	created = datetime.now()
 	errors = 0
 	last_error = ''
+	veto = False
 	
 	def __init__(self):
 		self.last_read = datetime.now()

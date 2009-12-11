@@ -127,6 +127,17 @@ class XapianArticleLoader:
 			
 		return results
 		
+	def deleteArticlesFromFeed(self, feed, database_article_mapper):
+		page = 0
+		articles = database_article_mapper.loadArticlesByFeed(feed.id, page, 50)
+		while len(articles) > 0:
+			for art in articles:
+				self.wdb.delete_document("U"+art.link)
+			page += 1
+			articles = database_article_mapper.loadArticlesByFeed(feed.id, page, 50)
+			
+		self.flush()
+		
 	def mostRelevantTerms(self, article, Nterms):
 		''' extrae los N terminos mas relevantes 
 		del articulo '''
