@@ -21,7 +21,7 @@ class PostgreSQLArticleLoader:
 			try:
 				cur.execute(u"select id from articles where link = '%s' and feed = %s union select nextval('art_seq')"%(article.link, article.feed.id))
 			except:
-				self.con.commit()
+				PostgresDBReader.getInstance().commit()
 				raise "error al obtener el identificador"
 				
 			all = cur.fetchall()
@@ -74,7 +74,7 @@ class PostgreSQLArticleLoader:
 	def deleteArticlesFromFeed(self, feed):
 		mapper = PostgresDBPrivileged.getInstance(self.user, self.session_token)
 		cur = mapper.cursor()
-		cur.execute("delete from articles where feed = %s", feed.id)
+		cur.execute("delete from articles where feed = %s", (feed.id,))
 		mapper.commit()
 
 	def loadLastNArticles(self, n):
