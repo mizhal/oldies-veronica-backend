@@ -129,9 +129,9 @@ class PostgreSQLArticleLoader:
 			res.append(a)
 		return res
 		
-	def loadArticlesByFeed(self, n, feed_id, offset, limit):
+	def loadArticlesByFeed(self, feed_id, page, limit):
 		cur = PostgresDBReader.getInstance().cursor()
-		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc offset %s limit %s"%(feed_id, offset*limit, limit))
+		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc offset %s limit %s"%(feed_id, page*limit, limit))
 		res = []
 		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
 			a = Article()
