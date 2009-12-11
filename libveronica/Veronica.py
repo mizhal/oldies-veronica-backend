@@ -48,13 +48,13 @@ class Veronica:
 		
 		feed_loader.save(new)
 		
-	def deleteFeed(self, feed):
+	def deleteFeed(self, user, session_token, feed):
 		pass
 		
-	def classifyFeed(self, feed, sgcat):
+	def classifyFeed(self, user, session_token, feed, sgcat):
 		pass
 		
-	def vetoFeed(self, feed, delete_news = False):
+	def vetoFeed(self, user, session_token, feed, delete_news = False):
 		feed.veto = True
 		feed_loader = DBFeedLoader()
 		feed_loader.setCredentials(user, session_token)
@@ -68,7 +68,7 @@ class Veronica:
 			fts_artloader = FTSArticleLoader(xapian_news_base)
 			fts_artloader.deleteArticlesFromFeed(feed, artloader)
 		
-	def rebuildFTSIndex(self):
+	def rebuildFTSIndex(self, user, session_token):
 		pass
 		
 	def gatherNews(self, user, session_token, how_many = None, show_details = False):
