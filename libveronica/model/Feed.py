@@ -127,7 +127,7 @@ class Feed:
 				if not link in links:
 					new2.append(article)
 			else:	
-				llz = unicode(llz)
+				llz = unicode(link)
 				if not llz in links:
 					new2.append(article)
 					
