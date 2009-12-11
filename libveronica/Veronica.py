@@ -2,23 +2,27 @@ from sys import argv
 from psycopg2 import connect
 import feedparser as rss
 
-from dao.XapianArticleLoader import XapianArticleLoader
-from dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader
-from dao.PostgresFeedLoader import PostgresFeedLoader
-from dao.PostgresDB import PostgresDBReader
+from dao.XapianArticleLoader import XapianArticleLoader as FTSArticleLoader
+from dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader as DBArticleLoader
+from dao.PostgresFeedLoader import PostgresFeedLoader as DBFeedLoader
+from dao.PostgresDB import PostgresDBReader as DBReader
 from config import credentials, xapian_news_base
 
 from model.Feed import Feed
 
 class Veronica:
 	def __init__(self):
-		self.feed_loader = PostgresFeedLoader()
+		self.feed_loader = DBFeedLoader()
 		
 	def select(self, tries = 6):
 		return self.feed_loader.randomSelect(tries) 
 		
 	def login(self, user, password):
-		return PostgresDBReader.getInstance().openSession(user, password)
+		return DBReader.getInstance().openSession(user, password)
+		
+	def getFeed(self, id):
+		feed_loader = DBFeedLoader()
+		return feed_loader.getById(id)
 		
 	def addFeed(self, user, session_token, url, title = None, site = None):
 		''' anyadir un feed 
@@ -44,7 +48,7 @@ class Veronica:
 		
 		feed_loader.save(new)
 		
-	def deleteFeed(self, url):
+	def deleteFeed(self, feed):
 		pass
 		
 	def classifyFeed(self, feed, sgcat):
@@ -52,23 +56,23 @@ class Veronica:
 		
 	def vetoFeed(self, feed, delete_news = False):
 		feed.veto = True
-		feed_loader = PostgresFeedLoader()
+		feed_loader = DBFeedLoader()
 		feed_loader.setCredentials(user, session_token)
 		
 		feed_loader.save(feed)
 		
 		if delete_news:
-			artloader = PostgreSQLArticleLoader()
+			artloader = DBArticleLoader()
 			artloader.setCredentials(user, session_token)
 			artloader.deleteArticlesFromFeed(feed)
-			fts_artloader = XapianArticleLoader(xapian_news_base)
+			fts_artloader = FTSArticleLoader(xapian_news_base)
 			fts_artloader.deleteArticlesFromFeed(feed, artloader)
 		
 	def rebuildFTSIndex(self):
 		pass
 		
 	def gatherNews(self, user, session_token, how_many = None, show_details = False):
-		loader = PostgresFeedLoader()
+		loader = DBFeedLoader()
 
 		#seleccion de los feeds a consultar
 		feeds = None
@@ -81,8 +85,8 @@ class Veronica:
 		else:
 			feeds = loader.randomSelect()
 
-		fts_index_mapper = XapianArticleLoader(xapian_news_base)
-		database_mapper = PostgreSQLArticleLoader()
+		fts_index_mapper = FTSArticleLoader(xapian_news_base)
+		database_mapper = DBArticleLoader()
 		database_mapper.setCredentials(user, session_token)
 		for feed in feeds:
 			feed.update(fts_index_mapper, database_mapper, show_details)
