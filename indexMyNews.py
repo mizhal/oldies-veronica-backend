@@ -12,7 +12,7 @@ socket.setdefaulttimeout(timeout)
 
 ##############################
 
-from libveronica.facade import Veronica
+from libveronica.Veronica import Veronica
 
 if __name__ == "__main__":
 	veronica = Veronica()
