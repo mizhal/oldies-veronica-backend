@@ -15,7 +15,7 @@ class Veronica:
 	def select(self, tries = 6):
 		return self.feed_loader.randomSelect(tries) 
 		
-	def login(user, password):
+	def login(self, user, password):
 		return PostgresDBReader.getInstance().openSession(user, password)
 		
 	def addFeed(self, user, session_token, url, title = None, site = None):
