@@ -176,16 +176,16 @@ class PostgresFeedLoader:
 		#TODO: de momento no tiene en cuenta la afinidad del usuario, pero es necesario incorporarlo
 		bag = []
 	
-		quick = self.loadMany("select %s from feeds "
-							  "order by (now() - last_read)*freq desc where veto = false "
+		quick = self.loadMany("select %s from feeds where veto = false "
+							  "order by (now() - last_read)*freq desc "
 							  "limit %s"%(PostgresFeedLoader.COLUMNS, 
 											2*tries
 									      )
 							  )
 
 		old = self.loadMany("select %s "
-						    "from feeds "
-						    "order by last_read asc where veto = false "
+						    "from feeds where veto = false "
+						    "order by last_read asc "
 						    "limit %s"%(PostgresFeedLoader.COLUMNS, 
 									    2*tries)
 						    )
