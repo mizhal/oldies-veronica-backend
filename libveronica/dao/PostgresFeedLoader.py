@@ -177,7 +177,7 @@ class PostgresFeedLoader:
 		bag = []
 	
 		quick = self.loadMany("select %s from feeds "
-							  "order by (now() - last_read)*freq desc "
+							  "order by (now() - last_read)*freq desc where veto = false "
 							  "limit %s"%(PostgresFeedLoader.COLUMNS, 
 											2*tries
 									      )
@@ -185,7 +185,7 @@ class PostgresFeedLoader:
 
 		old = self.loadMany("select %s "
 						    "from feeds "
-						    "order by last_read asc "
+						    "order by last_read asc where veto = false "
 						    "limit %s"%(PostgresFeedLoader.COLUMNS, 
 									    2*tries)
 						    )
