@@ -5,7 +5,8 @@ from datetime import datetime
 import calendar
 
 import lxml.html
-from lxml.html.clean import clean_html, ParserError
+from lxml.html.clean import clean_html
+from lxml.etree import ParserError
 
 import xapian
 
