@@ -1,3 +1,5 @@
+from os import rmtree
+
 from time import strftime
 from datetime import datetime
 import calendar
@@ -83,12 +85,7 @@ class XapianArticleLoader:
               
     def cleanAll(self):
         '''delete whole index'''
-        
-        it = self.wdb.postlist_begin("")
-        while it != self.wdb.postlist_end(""):
-            self.wdb.delete_document(it.get_docid())
-            it.next()
-        self.wdb.flush()
+        rmtree(self.db_dir)
 
     def getFromQuery(self, query, offset = 0, count = 100):
         query = self.parser.parse_query(query.encode("utf8"))
