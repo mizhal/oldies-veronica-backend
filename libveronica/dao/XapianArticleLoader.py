@@ -65,14 +65,15 @@ class XapianArticleLoader:
         except:
             uncontent = ''
             
-        try:
+        if len(title) != 0: 
             untitle = lxml.html.fromstring(title).text_content()
-        except:
-            print title
-            title = title.replace("&","&amp;")
-            untitle = lxml.html.fromstring(title).text_content()
+        else:
+            untitle = ''
         
         uncontent = untitle + uncontent
+        
+        if len(uncontent) == 0:
+            return
         
         ## @todo FILTROS DE STOPWORDS, NUMEROS Y DEMAS
         
