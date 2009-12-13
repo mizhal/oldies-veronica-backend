@@ -110,7 +110,7 @@ class PostgresFeedLoader:
 				    )
 		db.commit()
 
-	def loadSingle(self, sql):
+	def _loadSingle(self, sql):
 		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute(sql)
 		row = cur.fetchone()
@@ -131,7 +131,7 @@ class PostgresFeedLoader:
 		
 		return f
 		
-	def loadMany(self, sql):
+	def _loadMany(self, sql):
 		cur = PostgresDBReader.getInstance().cursor()
 		cur.execute(sql)
 		results = []
@@ -157,14 +157,14 @@ class PostgresFeedLoader:
 	COLUMNS = "id, rss, site, title, response, freq, last_read, last_news, created, errors, last_err, veto"
 		
 	def getAll(self):
-		return self.loadMany("select %s from feeds" % PostgresFeedLoader.COLUMNS)
+		return self._loadMany("select %s from feeds" % PostgresFeedLoader.COLUMNS)
 		
 	def getById(self, id):
 		q = PostgresFeedLoader.cache.get(id, False)
 		if q:
 			return q
 		else:
-			q = self.loadSingle("select %s from feeds "
+			q = self._loadSingle("select %s from feeds "
 							    "where id = %s"%(
 												PostgresFeedLoader.COLUMNS,
 												id)
@@ -176,14 +176,14 @@ class PostgresFeedLoader:
 		#TODO: de momento no tiene en cuenta la afinidad del usuario, pero es necesario incorporarlo
 		bag = []
 	
-		quick = self.loadMany("select %s from feeds where veto = false "
+		quick = self._loadMany("select %s from feeds where veto = false "
 							  "order by (now() - last_read)*freq desc "
 							  "limit %s"%(PostgresFeedLoader.COLUMNS, 
 											2*tries
 									      )
 							  )
 
-		old = self.loadMany("select %s "
+		old = self._loadMany("select %s "
 						    "from feeds where veto = false "
 						    "order by last_read asc "
 						    "limit %s"%(PostgresFeedLoader.COLUMNS, 

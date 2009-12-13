@@ -34,6 +34,42 @@ class PostgreSQLArticleLoader:
 			else:
 				errors.log("PostgreSQLArticleLoader", "assignID", "error al obtener el identificador")
 				raise "error al obtener el identificador"
+			
+	def _loadOne(self, sql):
+		cur = PostgresDBReader.getInstance().cursor()
+		cur.execute(sql)
+		
+		id, feed_id , link, title, content, published, fetch_date, created = cur.fetchone()
+		
+		a = Article()
+		a.content = content.decode("utf8")
+		a.title = title.decode("utf8")
+		a.create_date = created
+		a.pub_date = published
+		a.fetch_date = fetch_date
+		a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
+		a.link = link.decode("utf8")
+		a.id = id
+		
+		return a
+	
+	def _loadMany(self, sql):
+		cur = PostgresDBReader.getInstance().cursor()
+		cur.execute(sql)
+		res = []
+		
+		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
+			a = Article()
+			a.content = content.decode("utf8")
+			a.title = title.decode("utf8")
+			a.create_date = created
+			a.pub_date = published
+			a.fetch_date = fetch_date
+			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
+			a.link = link.decode("utf8")
+			a.id = id
+			res.append(a)
+		return res
 		
 	def getNLastURIs(self, n, feed_id):
 		cur = PostgresDBReader.getInstance().cursor()
@@ -78,70 +114,16 @@ class PostgreSQLArticleLoader:
 		mapper.commit()
 
 	def loadLastNArticles(self, n):
-		cur = PostgresDBReader.getInstance().cursor()
-		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
-		res = []
-		
-		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
-			a = Article()
-			a.content = content.decode("utf8")
-			a.title = title.decode("utf8")
-			a.create_date = created
-			a.pub_date = published
-			a.fetch_date = fetch_date
-			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
-			a.link = link.decode("utf8")
-			a.id = id
-			res.append(a)
-		return res
+		return self._loadMany("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
 		
 	def loadLastNArticlesFetched(self, n):
-		cur = PostgresDBReader.getInstance().cursor()
-		cur.execute("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.fetch_date desc limit %s"%n)
-		res = []
-		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
-			a = Article()
-			a.content = content.decode("utf8")
-			a.title = title.decode("utf8")
-			a.create_date = created
-			a.pub_date = published
-			a.fetch_date = fetch_date
-			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
-			a.link = link.decode("utf8")
-			a.id = id
-			res.append(a)
-		return res	
+		return self._loadMany("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.fetch_date desc limit %s"%n)
 		
 	def loadLastNArticlesByFeed(self, n, feed_id):
-		cur = PostgresDBReader.getInstance().cursor()
-		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc limit %s"%(feed_id, n))
-		res = []
-		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
-			a = Article()
-			a.content = content.decode("utf8")
-			a.title = title.decode("utf8")
-			a.create_date = created
-			a.pub_date = published
-			a.fetch_date = fetch_date
-			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
-			a.link = link.decode("utf8")
-			a.id = id
-			res.append(a)
-		return res
+		return self._loadMany("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc limit %s"%(feed_id, n))
 		
 	def loadArticlesByFeed(self, feed_id, page, limit):
-		cur = PostgresDBReader.getInstance().cursor()
-		cur.execute("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc offset %s limit %s"%(feed_id, page*limit, limit))
-		res = []
-		for id, feed_id , link, title, content, published, fetch_date, created in cur.fetchall():
-			a = Article()
-			a.content = content.decode("utf8")
-			a.title = title.decode("utf8")
-			a.create_date = created
-			a.pub_date = published
-			a.fetch_date = fetch_date
-			a.loadFeed(feed_id, PostgreSQLArticleLoader.feed_mapper)
-			a.link = link.decode("utf8")
-			a.id = id
-			res.append(a)
-		return res
+		return self._loadMany("select id, feed, link, title, content, published, fetch_date, created from articles where feed = %s order by published desc offset %s limit %s"%(feed_id, page*limit, limit))
+	
+	def loadLastArticles(self, page, limit):
+		return self._loadMany("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc offset %s limit %s"%(page*limit, limit))
