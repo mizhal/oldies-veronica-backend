@@ -68,6 +68,7 @@ class XapianArticleLoader:
         try:
             untitle = lxml.html.fromstring(title).text_content()
         except:
+            print title
             title = title.replace("&","&amp;")
             untitle = lxml.html.fromstring(title).text_content()
         
