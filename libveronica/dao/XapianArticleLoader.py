@@ -27,6 +27,8 @@ DEFAULT_SEARCH_FLAGS = (
         xapian.QueryParser.FLAG_PARTIAL
         )
 
+BLANK_RE = re.compile("^\s*$")
+
 class XapianArticleLoader:
     URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP, PUB_TIMESTAMP, ID = range(7)
     
@@ -42,8 +44,6 @@ class XapianArticleLoader:
         self.read_db = xapian.Database(db_dir)
         self.parser = xapian.QueryParser()
         self.parser.set_database(self.read_db) 
-        
-    BLANK_RE = re.compile("^\s*$")
         
     def save(self, article):
         if self.wdb is None:
