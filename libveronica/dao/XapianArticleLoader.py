@@ -43,13 +43,10 @@ class XapianArticleLoader:
             raise "Xapian open as only reader"
         
         term_gen = xapian.TermGenerator()
-        try:
-            untag = replace_acute(decode_htmlentities(strip_html_tags(article.title + " " + article.content)))
-            untitle = replace_acute(decode_htmlentities(strip_html_tags(article.title)))
-        except UnicodeDecodeError, e:
-            print e
-            #errors.log("XapianArticleLoader", "save", str(e))
-            return
+        
+        untag = replace_acute(decode_htmlentities(strip_html_tags(article.title + " " + article.content)))
+        untitle = replace_acute(decode_htmlentities(strip_html_tags(article.title)))
+        
         term_gen.index_text_without_positions(untag)
         
         doc = term_gen.get_document()
