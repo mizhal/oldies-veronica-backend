@@ -69,9 +69,14 @@ class XapianArticleLoader:
         #identificacion del feed
         doc.add_term( "XFEED" + str(article.feed.id))
         doc.add_term( "D" + strftime("%Y-%m-%d",article.pub_date.timetuple()) )
-        doc.add_term( "U" + article.link) ## @change cambiado para usar como indice la url, ya que para sustituir xapian usa un termino como indice, asi se sustituyen los que tengan el termino dado como primer parametro, no el identificador, por ello, es necesario anyadir ese termino de "unicidad"
         
-        self.wdb.replace_document("U" + article.link, doc)
+        unique_key = "U" + article.link
+        while len(unique_key.encode("utf8")) > 245:
+            unique_key = unique_key[:-1]
+
+        doc.add_term(unique_key)
+        
+        self.wdb.replace_document(unique_key, doc)
         
     def flush(self):
         self.wdb.flush()
