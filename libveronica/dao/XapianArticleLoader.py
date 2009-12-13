@@ -1,5 +1,4 @@
-from shutil import rmtree
-
+import re
 from time import strftime
 from datetime import datetime
 import calendar
@@ -7,6 +6,8 @@ import calendar
 import lxml.html
 from lxml.html.clean import clean_html
 from lxml.etree import ParserError
+
+from shutil import rmtree
 
 import xapian
 
@@ -42,37 +43,29 @@ class XapianArticleLoader:
         self.parser = xapian.QueryParser()
         self.parser.set_database(self.read_db) 
         
+    BLANK_RE = re.compile("^\s*$")
+        
     def save(self, article):
         if self.wdb is None:
             raise "Xapian open as only reader"
         
         term_gen = xapian.TermGenerator()
     
-        try:
-            title = clean_html(" " + article.title)
-        except ParserError, e:
-            print e, 'en', article.title
-            title = ""
-        
-        try:
-            content = clean_html(" " + article.content)
-        except ParserError, e:
-            print e, 'en', article.title
-            content = ""
-            
-        try:
-            uncontent = lxml.html.fromstring(content).text_content()
-        except:
-            uncontent = ''
-            
-        if len(title) != 0: 
-            untitle = lxml.html.fromstring(title).text_content()
+        if BLANK_RE.match(article.title):
+           untitle = ''
         else:
-            untitle = ''
+            title = clean_html(article.title)
+            untitle = lxml.html.fromstring(title).text_content()
+            
+        if BLANK_RE.match(article.content):
+            uncontent = ''
+        else:
+            content = clean_html(article.content)
+            uncontent = lxml.html.fromstring(content).text_content()
         
         uncontent = untitle + uncontent
         
-        if len(uncontent) == 0:
+        if BLANK_RE.match(uncontent):
             return
         
         ## @todo FILTROS DE STOPWORDS, NUMEROS Y DEMAS
