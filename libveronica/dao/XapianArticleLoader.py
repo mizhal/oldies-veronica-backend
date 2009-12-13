@@ -54,10 +54,18 @@ class XapianArticleLoader:
             print e, 'en', article.title
             content = ""
             
-        untag = lxml.html.fromstring(article.title + content).text_content()
+        try:
+            uncontent = lxml.html.fromstring(content).text_content()
+        except:
+            uncontent = ''
+            
         untitle = lxml.html.fromstring(article.title).text_content()
         
-        term_gen.index_text_without_positions(untag)
+        uncontent = untitle + uncontent
+        
+        ## @todo FILTROS DE STOPWORDS, NUMEROS Y DEMAS
+        
+        term_gen.index_text_without_positions(uncontent)
         
         doc = term_gen.get_document()
         
