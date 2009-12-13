@@ -86,6 +86,7 @@ class XapianArticleLoader:
     def cleanAll(self):
         '''delete whole index'''
         rmtree(self.db_dir)
+        self.reopen_db()
 
     def getFromQuery(self, query, offset = 0, count = 100):
         query = self.parser.parse_query(query.encode("utf8"))
