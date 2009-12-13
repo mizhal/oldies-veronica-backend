@@ -14,7 +14,7 @@ class PostgreSQLArticleLoader:
 	
 	
 	feed_mapper = PostgresFeedLoader()
-		
+				
 	def assignID(self, article):
 		if article.id is None:
 			cur = PostgresDBReader.getInstance().cursor()
@@ -127,3 +127,6 @@ class PostgreSQLArticleLoader:
 	
 	def loadLastArticles(self, page, limit):
 		return self._loadMany("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc offset %s limit %s"%(page*limit, limit))
+
+	def loadAllArticles(self, page, limit):
+		return self._loadMany("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A offset %s limit %s"%(page*limit, limit))

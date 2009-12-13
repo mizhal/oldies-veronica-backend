@@ -69,7 +69,19 @@ class Veronica:
 			artloader.deleteArticlesFromFeed(feed)
 		
 	def rebuildFTSIndex(self, user, session_token):
-		pass
+		fts_index_mapper = FTSArticleLoader(xapian_news_base)
+		database_mapper = DBArticleLoader()
+		
+		fts_index_mapper.cleanAll()
+		
+		page = 0
+		articles = database_mapper.loadAllArticles(page, 50)
+		while len(articles):
+			for a in articles:
+				fts_index_mapper.save(a)
+			fts_index.flush()
+			articles = database_mapper.loadAllArticles(page, 50)
+			page +=1
 		
 	def gatherNews(self, user, session_token, how_many = None, show_details = False):
 		loader = DBFeedLoader()
