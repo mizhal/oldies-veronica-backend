@@ -6,6 +6,7 @@ import random
 from md5 import md5
 
 from psycopg2 import connect
+from time import strftime
 
 from ..utils.readini import IniFile
 

@@ -14,7 +14,7 @@ class PostgresFeedLoader:
 	
 	def _assignID(self, feed):
 		if feed.id is None:
-			cur = self.con.cursor()
+			cur = PostgresDBReader.getInstance().cursor()
 			try:
 				cur.execute(u"select id from feeds where rss = '%s' union select nextval('feed_seq')"%(feed.rss, feed.id))
 			except:
