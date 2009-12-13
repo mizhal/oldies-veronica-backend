@@ -5,7 +5,7 @@ from datetime import datetime
 import calendar
 
 import lxml.html
-from lxml.html.clean import clean_html
+from lxml.html.clean import clean_html, ParserError
 
 import xapian
 
@@ -47,7 +47,13 @@ class XapianArticleLoader:
         
         term_gen = xapian.TermGenerator()
         
-        untag = lxml.html.fromstring(article.title + clean_html(" " + article.content)).text_content()
+        try:
+            content = clean_html(" " + article.content)
+        except ParserError, e:
+            print e, 'en', article.title
+            content = ""
+            
+        untag = lxml.html.fromstring(article.title + content).text_content()
         untitle = lxml.html.fromstring(article.title).text_content()
         
         term_gen.index_text_without_positions(untag)
