@@ -85,7 +85,10 @@ class XapianArticleLoader:
               
     def cleanAll(self):
         '''delete whole index'''
+        ## @fixme Este metodo es inseguro, mejorarlo
         rmtree(self.db_dir)
+        self.wdb = xapian.WritableDatabase(db_dir, xapian.DB_CREATE_OR_OPEN)
+        self.read_db = xapian.Database(db_dir)
         self.reopen_db()
 
     def getFromQuery(self, query, offset = 0, count = 100):
