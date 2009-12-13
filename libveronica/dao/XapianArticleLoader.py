@@ -52,7 +52,7 @@ class XapianArticleLoader:
             title = clean_html(" " + article.title)
         except ParserError, e:
             print e, 'en', article.title
-            content = ""
+            title = ""
         
         try:
             content = clean_html(" " + article.content)
