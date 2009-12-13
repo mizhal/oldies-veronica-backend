@@ -47,7 +47,7 @@ class XapianArticleLoader:
         
         term_gen = xapian.TermGenerator()
         
-        untag = lxml.html.fromstring(article.title + " " + clean_html(article.content)).text_content()
+        untag = lxml.html.fromstring(article.title + clean_html(" " + article.content)).text_content()
         untitle = lxml.html.fromstring(article.title).text_content()
         
         term_gen.index_text_without_positions(untag)
