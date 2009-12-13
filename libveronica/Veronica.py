@@ -77,7 +77,10 @@ class Veronica:
 		page = 0
 		articles = database_mapper.loadAllArticles(page, 200)
 		while len(articles):
+			print "PAGE", page
+			print "------------------"
 			for a in articles:
+				print a.title
 				fts_index_mapper.save(a)
 			fts_index_mapper.flush()
 			page +=1
