@@ -4,6 +4,8 @@ from time import strftime
 from datetime import datetime
 import calendar
 
+import lxml.html
+
 import xapian
 
 from infosfera.index.xapian.adapters import rel_to_prefix
@@ -44,8 +46,8 @@ class XapianArticleLoader:
         
         term_gen = xapian.TermGenerator()
         
-        untag = replace_acute(decode_htmlentities(strip_html_tags(article.title + " " + article.content)))
-        untitle = replace_acute(decode_htmlentities(strip_html_tags(article.title)))
+        untag = lxml.html.fromstring(article.title + " " + article.content).text_content()
+        untitle = lxml.html.fromstring(article.title).text_content()
         
         term_gen.index_text_without_positions(untag)
         
