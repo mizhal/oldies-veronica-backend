@@ -47,6 +47,12 @@ class XapianArticleLoader:
             raise "Xapian open as only reader"
         
         term_gen = xapian.TermGenerator()
+    
+        try:
+            title = clean_html(" " + article.title)
+        except ParserError, e:
+            print e, 'en', article.title
+            content = ""
         
         try:
             content = clean_html(" " + article.content)
@@ -59,7 +65,7 @@ class XapianArticleLoader:
         except:
             uncontent = ''
             
-        untitle = lxml.html.fromstring(article.title).text_content()
+        untitle = lxml.html.fromstring(title).text_content()
         
         uncontent = untitle + uncontent
         
