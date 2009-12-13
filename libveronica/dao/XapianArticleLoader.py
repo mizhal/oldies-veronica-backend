@@ -1,4 +1,4 @@
-from os import rmtree
+from shutil import rmtree
 
 from time import strftime
 from datetime import datetime
