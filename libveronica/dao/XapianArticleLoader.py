@@ -54,15 +54,21 @@ class XapianArticleLoader:
         if BLANK_RE.match(article.title):
            untitle = ''
         else:
-            title = clean_html(article.title)
-            untitle = lxml.html.fromstring(title).text_content()
-            
+            try:
+                title = clean_html(article.title)
+                untitle = lxml.html.fromstring(title).text_content()
+            except:
+                untitle = ''
+                            
         if BLANK_RE.match(article.content):
             uncontent = ''
         else:
-            content = clean_html(article.content)
-            uncontent = lxml.html.fromstring(content).text_content()
-        
+            try:
+                content = clean_html(article.content)
+                uncontent = lxml.html.fromstring(content).text_content()
+            except:
+                uncontent = ''
+            
         uncontent = untitle + uncontent
         
         if BLANK_RE.match(uncontent):
