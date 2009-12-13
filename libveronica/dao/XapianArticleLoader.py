@@ -83,8 +83,6 @@ class XapianArticleLoader:
               
     def cleanAll(self):
         '''delete whole index'''
-        ## @todo
-        self.wdb.positionlist_begin()
         
         it = self.wdb.postlist_begin("")
         while it != self.wdb.postlist_end(""):
