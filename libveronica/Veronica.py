@@ -76,7 +76,7 @@ class Veronica:
 		
 		page = 0
 		articles = database_mapper.loadAllArticles(page, 200)
-		while len(articles):
+		while len(articles) > 0:
 			for a in articles:
 				fts_index_mapper.save(a)
 			fts_index_mapper.flush()
