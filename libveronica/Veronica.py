@@ -75,16 +75,15 @@ class Veronica:
 		fts_index_mapper.cleanAll()
 		
 		page = 0
-		articles = database_mapper.loadAllArticles(page, 200)
-		while len(articles):
-			print "PAGE", page
+		articles = database_mapper.loadAllArticles(page, 500)
+		while len(articles) > 0:
+			print "PAGE", page, "OFFSET", page*500
 			print "------------------"
 			for a in articles:
-				print a.title
 				fts_index_mapper.save(a)
 			fts_index_mapper.flush()
 			page +=1
-			articles = database_mapper.loadAllArticles(page, 200)
+			articles = database_mapper.loadAllArticles(page, 500)
 		
 	def gatherNews(self, user, session_token, how_many = None, show_details = False):
 		loader = DBFeedLoader()
