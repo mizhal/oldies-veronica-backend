@@ -249,7 +249,7 @@ class XapianArticleLoader:
         # Select the first 10 documents as the key ones to use to compute relevant
         # terms
         rset = xapian.RSet()
-        for m in enquire.get_mset(0, 30):
+        for m in enquire.get_mset(0, 10):
                 rset.add_document(m[xapian.MSET_DID])
                 
         # This is the "Expansion set" for the search: the 10 most relevant terms that
@@ -258,5 +258,5 @@ class XapianArticleLoader:
 
         # Print out the results
         for res in eset:
-          print "%.2f %s" % (res.weight, res.term[2:])
+          print "%.2f %s" % (res.weight, res.term)
         
