@@ -243,6 +243,6 @@ class XapianArticleLoader:
         if len(mset) == 0:
             return "No se han encontrado terminos"
         
-        for m in enquire.get_mset(offset, count):
-                print m[xapian.MSET_PERCENT], m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.TITLE).decode("utf8")
+        for m in enquire.get_eset(offset, count):
+            print m
         
