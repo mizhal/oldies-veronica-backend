@@ -114,7 +114,7 @@ class PostgreSQLArticleLoader:
 		mapper.commit()
 		
 	def loadById(self, id):
-		return self._loadOne("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles where id = ?",(id,))
+		return self._loadOne("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles where id = %s"%(id,))
 
 	def loadLastNArticles(self, n):
 		return self._loadMany("select A.id, A.feed, A.link, A.title, A.content, A.published, A.fetch_date, A.created from articles as A order by A.published desc limit %s"%n)
