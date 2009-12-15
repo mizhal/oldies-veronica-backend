@@ -241,7 +241,7 @@ class XapianArticleLoader:
             mset = enquire.get_mset(offset, count)
 
         results = []
-        for m in enquire.get_eset(offset, count):
+        for m in mset:
             try:
                 a = Article()
                 a.fitness = m[xapian.MSET_PERCENT]
