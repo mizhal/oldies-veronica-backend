@@ -7,15 +7,23 @@ from libveronica.config import stopwords
 
 artloader = PostgreSQLArticleLoader()
 
-art = artloader.loadAllArticles(400,1)[0]
-
-print "Contenido del articulo"
-print "-----------------------------"
-print art.content
+while 1:
+    print "prueba un articulo"
+    id = input()
+    art = artloader.loadAllArticles(400,1)[0]
+    
+    print "Contenido del articulo"
+    print "-----------------------------"
+    print art.content
+    
+    print "es este archivo correcto?"
+    res = input()
+    if res == 'S' or res == 's':
+        break
 
 search_engine = XapianArticleLoader(xapian_news_base)
 search_engine.setStopWords(stopwords)
 
 print "Terminos mas relevantes"
 print "-----------------------------"
-print seach_engine.mostRelevantTerms(art, 10)
+print search_engine.mostRelevantTerms(art, 10)
