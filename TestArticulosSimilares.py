@@ -27,4 +27,5 @@ search_engine.setStopWords(stopwords)
 
 print "Terminos mas relevantes"
 print "-----------------------------"
-print search_engine.mostRelevantTerms(art, 10)
+for art in search_engine.getSimilarArticles(art, 10):
+    print art.title
