@@ -200,7 +200,7 @@ class XapianArticleLoader:
         untitle, uncontent = self._cleanArticleText(article)
         
         termbag = []
-        for i in re.split("\s+", uncontent):
+        for i in re.split("\s+.,;/\\!?¿¡[+][*]#%&\(\)[{}]\[\]", uncontent):
             if not self.stopwords.has_key(i):
                 if re.match("^[0-9]+(?:[.,][0-9]+)*$", i) is None:
                     termbag.append(i)
@@ -208,7 +208,7 @@ class XapianArticleLoader:
         
         enquire = xapian.Enquire(self.read_db)
         
-        query = xapian.Query((" AND ".join(termbag).encode("utf8")))
+        query = xapian.Query((" ".join(termbag).encode("utf8")))
         print query
         enquire.set_query(query)
 
