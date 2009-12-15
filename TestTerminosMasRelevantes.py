@@ -11,7 +11,7 @@ artloader = PostgreSQLArticleLoader()
 while 1:
     print "prueba un articulo"
     id = input()
-    art = artloader.loadAllArticles(id,1)[0]
+    art = artloader.loadById(id)
     
     print "Contenido del articulo"
     print "-----------------------------"
