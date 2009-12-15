@@ -1,9 +1,9 @@
 ''' prueba de la funcionalidad de terminos mas relevantes '''
 
-from .libveronica.dao.XapianArticleLoader import XapianArticleLoader
-from .libveronica.dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader
-from .libveronica.Veronica import xapian_news_base
-from .libveronica.config import stopwords
+from libveronica.dao.XapianArticleLoader import XapianArticleLoader
+from libveronica.dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader
+from libveronica.Veronica import xapian_news_base
+from libveronica.config import stopwords
 
 artloader = PostgreSQLArticleLoader()
 
