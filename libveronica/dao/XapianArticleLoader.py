@@ -202,10 +202,14 @@ class XapianArticleLoader:
         untitle, uncontent = self._cleanArticleText(article)
         
         termbag = []
-        for i in re.split("\s+.,;/\\!?¿¡[+][*]#%&\(\)[{}]\[\]", uncontent):
-            if not self.stopwords.has_key(i):
-                if re.match("^[0-9]+(?:[.,][0-9]+)*$", i) is None:
-                    termbag.append(i)
+        
+        splitter = re.compile(u"([^\s\)\(\]\[.,:;\-+!¡¿?\{\}]+)")
+        
+        for i in splitter.finditer(uncontent):
+            term = i.groups()[0]
+            if not self.stopwords.has_key(term):
+                if re.match("^[0-9]+(?:[.,][0-9]+)*$", term) is None:
+                    termbag.append(term)
         
         
         enquire = xapian.Enquire(self.read_db)
