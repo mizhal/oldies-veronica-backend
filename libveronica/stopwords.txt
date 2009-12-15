@@ -13,6 +13,7 @@ alguno
 alguna
 algunos
 algunas
+alguien
 ser
 es
 soy

@@ -21,8 +21,11 @@ from .PostgresFeedLoader import PostgresFeedLoader
 
 DEFAULT_SEARCH_FLAGS = (
         xapian.QueryParser.FLAG_BOOLEAN |
-        xapian.QueryParser.FLAG_PHRASE |
+        xapian.QueryParser.FLAG_AUTO_MULTIWORD_SYNONYMS |
+        xapian.QueryParser.FLAG_AUTO_SYNONYMS |
         xapian.QueryParser.FLAG_LOVEHATE |
+        xapian.QueryParser.FLAG_SPELLING_CORRECTION |
+        xapian.QueryParser.FLAG_STEM_SOME |
         xapian.QueryParser.FLAG_BOOLEAN_ANY_CASE |
         xapian.QueryParser.FLAG_WILDCARD |
         xapian.QueryParser.FLAG_SPELLING_CORRECTION |
@@ -72,7 +75,17 @@ class XapianArticleLoader:
         if BLANK_RE.match(uncontent):
             return None, None
         else:
-            return untitle, uncontent
+            termbag = []
+            
+            splitter = re.compile(u"([^\s\)\(\]\[.,\":;\-+!¡¿?\{\}]+)")
+            
+            for i in splitter.finditer(uncontent):
+                term = i.groups()[0]
+                if not self.stopwords.has_key(term):
+                    if re.match("^[0-9]+(?:[.,][0-9]+)*$", term) is None:
+                        termbag.append(term.lower())
+                        
+            return untitle, " ".join(termbag)
 
     def save(self, article):
         if self.wdb is None:
@@ -201,22 +214,8 @@ class XapianArticleLoader:
         ## extraccion de terminos
         untitle, uncontent = self._cleanArticleText(article)
         
-        termbag = []
-        
-        splitter = re.compile(u"([^\s\)\(\]\[.,:;\-+!¡¿?\{\}]+)")
-        
-        for i in splitter.finditer(uncontent):
-            term = i.groups()[0]
-            if not self.stopwords.has_key(term):
-                if re.match("^[0-9]+(?:[.,][0-9]+)*$", term) is None:
-                    termbag.append(term.lower())
-        
-        query = xapian.Query(termbag[0])
-        for term in termbag[1:]:
-            new_query = xapian.Query(term)
-            query = xapian.Query(xapian.Query.OP_OR, query, new_query)
-        
-        print query
+        query = " ".join([untitle, uncontent])
+        query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
         
         enquire = xapian.Enquire(self.read_db)
         enquire.set_query(query)
