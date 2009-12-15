@@ -214,7 +214,7 @@ class XapianArticleLoader:
         
         enquire = xapian.Enquire(self.read_db)
         
-        query = " OR ".join(termbag)
+        query = " ".join(termbag)
         query = query = self.parser.parse_query(query.encode("utf8"),
                                                  DEFAULT_SEARCH_FLAGS)
         print query
