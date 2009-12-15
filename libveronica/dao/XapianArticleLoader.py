@@ -216,10 +216,24 @@ class XapianArticleLoader:
         # Normally, you would use the results to suggest the user possible ways for
         # refining the search.  I instead abuse this feature to see what are the tags
         # that are most related to the search results.
-
+        
+        offset = 0
+        count = 100
         # Use an adaptive cutoff to avoid to pick bad results as references
-        matches = enquire.get_mset(0, 1)
-        topWeight = matches[0].weight
+        try:
+            mset = enquire.get_mset(offset, count)
+        except IOError, e:
+            if "DatabaseModifiedError" in str(e):
+                print "dbm error"
+                return
+        except xapian.DatabaseModifiedError, e: 
+            self.reopen_db()
+            mset = enquire.get_mset(offset, count)
+            
+        if len(mset) == 0:
+            return "No se han encontrado terminos"
+        
+        topWeight = mset[0].weight
         enquire.set_cutoff(0, topWeight * 0.7)
 
         # Select the first 10 documents as the key ones to use to compute relevant
