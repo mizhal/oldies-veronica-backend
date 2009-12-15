@@ -1,3 +1,5 @@
+#encoding=utf-8
+
 import re
 from time import strftime
 from datetime import datetime
