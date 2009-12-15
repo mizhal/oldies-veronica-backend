@@ -209,6 +209,7 @@ class XapianArticleLoader:
         enquire = xapian.Enquire(self.read_db)
         
         query = xapian.Query((" AND ".join(termbag).encode("utf8")))
+        print query
         enquire.set_query(query)
 
         # Now, instead of showing the results of the query, we ask Xapian what are the
