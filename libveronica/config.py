@@ -15,6 +15,6 @@ stopwords_file = join(dirname(__file__), "stopwords.txt")
 
 sf = open(stopwords_file)
 stopwords = {}
-for i in sf.read():
-    stopwords[i] = 1 
+for i in sf:
+    stopwords[i[:-1]] = 1 
 
