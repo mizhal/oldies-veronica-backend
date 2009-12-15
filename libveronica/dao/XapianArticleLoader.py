@@ -243,21 +243,6 @@ class XapianArticleLoader:
         if len(mset) == 0:
             return "No se han encontrado terminos"
         
-        # Use an adaptive cutoff to avoid to pick bad results as references
-        topWeight = mset[0].weight
-        enquire.set_cutoff(0, topWeight * 0.7)
-
-        # Select the first 10 documents as the key ones to use to compute relevant
-        # terms
-        rset = xapian.RSet()
         for m in enquire.get_mset(offset, count):
-                rset.add_document(m[xapian.MSET_DID])
-                
-        # This is the "Expansion set" for the search: the 10 most relevant terms that
-        # match the filter
-        eset = enquire.get_eset(100, rset, None)
-
-        # Print out the results
-        for res in eset:
-          print "%.2f %s" % (res.weight, res.term)
+                print m[xapian.MSET_PERCENT], m[xapian.MSET_DOCUMENT].get_value(XapianArticleLoader.TITLE).decode("utf8")
         
