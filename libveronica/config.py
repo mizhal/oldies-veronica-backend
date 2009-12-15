@@ -11,7 +11,7 @@ logfile = "/tmp/veronica-error.log"
 
 from os.path import dirname
 
-stopwords_file = dirname(dirame(__file__))
+stopwords_file = dirname(dirname(__file__))
 
 sf = open(stopwords_file)
 stopwords = {}
