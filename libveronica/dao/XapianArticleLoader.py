@@ -208,8 +208,8 @@ class XapianArticleLoader:
         
         enquire = xapian.Enquire(self.read_db)
         
-        query = " AND ".join(termbag)
-        enquire.set_query(query.encode("utf8"))
+        query = xapian.Query((" AND ".join(termbag).encode("utf8")))
+        enquire.set_query(query)
 
         # Now, instead of showing the results of the query, we ask Xapian what are the
         # terms in the index that are most relevant to this search.
