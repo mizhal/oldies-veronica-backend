@@ -241,6 +241,7 @@ class XapianArticleLoader:
             mset = enquire.get_mset(offset, count)
 
         results = []
+        feed_loader = PostgresFeedLoader()
         for m in mset:
             try:
                 a = Article()
