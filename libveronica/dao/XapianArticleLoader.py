@@ -214,8 +214,11 @@ class XapianArticleLoader:
         
         enquire = xapian.Enquire(self.read_db)
         
+        for term in termbag:
+            query = xapian.Query(xapian.OP_OR)
         query = " OR ".join(termbag)
-        query = xapian.Query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
+        query = query = self.parser.parse_query(query.encode("utf8"),
+                                                 DEFAULT_SEARCH_FLAGS)
         print query
         enquire.set_query(query)
 
