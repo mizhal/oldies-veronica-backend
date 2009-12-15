@@ -9,9 +9,9 @@ xapian_news_base = "/var/mik6/Base/indexes/news"
 
 logfile = "/tmp/veronica-error.log"
 
-from os.path import dirname
+from os.path import join, dirname
 
-stopwords_file = dirname(dirname(__file__))
+stopwords_file = join(dirname(dirname(__file__)), "stopwords.txt")
 
 sf = open(stopwords_file)
 stopwords = {}
