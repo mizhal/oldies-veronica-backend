@@ -25,7 +25,6 @@ DEFAULT_SEARCH_FLAGS = (
         xapian.QueryParser.FLAG_AUTO_SYNONYMS |
         xapian.QueryParser.FLAG_LOVEHATE |
         xapian.QueryParser.FLAG_SPELLING_CORRECTION |
-        xapian.QueryParser.FLAG_STEM_SOME |
         xapian.QueryParser.FLAG_BOOLEAN_ANY_CASE |
         xapian.QueryParser.FLAG_WILDCARD |
         xapian.QueryParser.FLAG_SPELLING_CORRECTION |
