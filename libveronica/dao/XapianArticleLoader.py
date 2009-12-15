@@ -213,7 +213,10 @@ class XapianArticleLoader:
         ## extraccion de terminos
         untitle, uncontent = self._cleanArticleText(article)
         
-        query = " ".join([untitle, uncontent])
+        termbag = []
+        for term in uncontent.split(" "):
+            termbag.append("~%s"%term)
+        query = " ".join(termbag)
         query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
         
         enquire = xapian.Enquire(self.read_db)
