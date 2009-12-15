@@ -209,13 +209,13 @@ class XapianArticleLoader:
             term = i.groups()[0]
             if not self.stopwords.has_key(term):
                 if re.match("^[0-9]+(?:[.,][0-9]+)*$", term) is None:
-                    termbag.append(term)
+                    termbag.append(term.lower())
         
         
         enquire = xapian.Enquire(self.read_db)
         
         query = " ".join(termbag)
-        query = self.parser.parse_query(query.encode("utf8"))
+        query = xapian.Query(query.encode("utf8"))
         print query
         enquire.set_query(query)
 
