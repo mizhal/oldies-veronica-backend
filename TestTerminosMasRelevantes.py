@@ -7,7 +7,7 @@ from libveronica.config import stopwords
 
 artloader = PostgreSQLArticleLoader()
 
-art = artloader.loadAllArticles(400,1)
+art = artloader.loadAllArticles(400,1)[0]
 
 print "Contenido del articulo"
 print "-----------------------------"
