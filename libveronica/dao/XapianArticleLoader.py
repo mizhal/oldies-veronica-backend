@@ -133,7 +133,7 @@ class XapianArticleLoader:
         self.reopen_db()
 
     def getFromQuery(self, query, offset = 0, count = 100):
-        query = self.parser.parse_query(query.encode("utf8"))
+        query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
 
         enquire = xapian.Enquire(self.read_db)
         enquire.set_query(query)
@@ -215,7 +215,7 @@ class XapianArticleLoader:
         enquire = xapian.Enquire(self.read_db)
         
         query = " OR ".join(termbag)
-        query = xapian.Query(query.encode("utf8"))
+        query = xapian.Query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
         print query
         enquire.set_query(query)
 
