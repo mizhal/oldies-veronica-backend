@@ -31,6 +31,7 @@ BLANK_RE = re.compile("^\s*$")
 
 class XapianArticleLoader:
     URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP, PUB_TIMESTAMP, ID = range(7)
+    stopwords = None
     
     def __init__(self, db_dir, only_reader = False):
         self.db_dir = db_dir
@@ -45,12 +46,7 @@ class XapianArticleLoader:
         self.parser = xapian.QueryParser()
         self.parser.set_database(self.read_db) 
         
-    def save(self, article):
-        if self.wdb is None:
-            raise "Xapian open as only reader"
-        
-        term_gen = xapian.TermGenerator()
-    
+    def _cleanArticleText(self, article):
         if BLANK_RE.match(article.title):
            untitle = ''
         else:
@@ -72,6 +68,18 @@ class XapianArticleLoader:
         uncontent = untitle + uncontent
         
         if BLANK_RE.match(uncontent):
+            return None, None
+        else:
+            return untitle, uncontent
+
+    def save(self, article):
+        if self.wdb is None:
+            raise "Xapian open as only reader"
+        
+        term_gen = xapian.TermGenerator()
+
+        untitle, uncontent = self._cleanArticleText(article)
+        if untitle is None and uncontent is None:
             return
         
         ## @todo FILTROS DE STOPWORDS, NUMEROS Y DEMAS
@@ -181,23 +189,27 @@ class XapianArticleLoader:
             
         self.flush()
         
+    def setStopWords(self, stopwords_dict):
+        self.stopwords = stopwords_dict
+                
     def mostRelevantTerms(self, article, Nterms):
         ''' extrae los N terminos mas relevantes 
         del articulo '''
             
         ## extraccion de terminos
-        term_gen = xapian.TermGenerator()
-        try:
-            untag = replace_acute(decode_htmlentities(strip_html_tags(article.title + " " + article.content)))
-        except UnicodeDecodeError, e:
-            print e
-            #errors.log("XapianArticleLoader", "save", str(e))
-            return
-        term_gen.index_text_without_positions(untag)
-        doc = term_gen.get_document()
+        untitle, uncontent = self._cleanArticleText(article)
+        
+        termbag = []
+        for i in re.split("\s+", uncontent):
+            if not self.stopwords.has_key(i):
+                if re.match("^[0-9]+(?:[.,][0-9]+)*$", i) is None:
+                    termbag.append(i)
+        
         
         enquire = xapian.Enquire(self.read_db)
-        enquire.set_query(query)
+        
+        query = " AND ".join(termbag)
+        enquire.set_query(query.encode("utf8"))
 
         # Now, instead of showing the results of the query, we ask Xapian what are the
         # terms in the index that are most relevant to this search.
@@ -222,5 +234,5 @@ class XapianArticleLoader:
 
         # Print out the results
         for res in eset:
-                print "%.2f %s" % (res.weight, res.term[2:])
+          print "%.2f %s" % (res.weight, res.term[2:])
         
