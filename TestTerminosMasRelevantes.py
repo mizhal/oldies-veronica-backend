@@ -19,7 +19,7 @@ while 1:
     
     print "es este archivo correcto?"
     res = stdin.readline()
-    if res == 'S' or res == 's':
+    if res.startswith('S') or res.startswith('s'):
         break
 
 search_engine = XapianArticleLoader(xapian_news_base)
