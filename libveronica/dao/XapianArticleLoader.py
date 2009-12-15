@@ -211,13 +211,14 @@ class XapianArticleLoader:
                 if re.match("^[0-9]+(?:[.,][0-9]+)*$", term) is None:
                     termbag.append(term.lower())
         
+        query = xapian.Query(termbag[0])
+        for term in termbag[1:]:
+            new_query = xapian.Query(termbag[0])
+            query = xapian.Query(xapian.Query.OP_OR, query, new_query)
+        
+        print query
         
         enquire = xapian.Enquire(self.read_db)
-        
-        query = " ".join(termbag)
-        query = query = self.parser.parse_query(query.encode("utf8"),
-                                                 DEFAULT_SEARCH_FLAGS)
-        print query
         enquire.set_query(query)
 
         # Now, instead of showing the results of the query, we ask Xapian what are the
