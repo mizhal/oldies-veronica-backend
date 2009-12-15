@@ -11,7 +11,7 @@ logfile = "/tmp/veronica-error.log"
 
 from os.path import join, dirname
 
-stopwords_file = join(dirname(dirname(__file__)), "stopwords.txt")
+stopwords_file = join(dirname(__file__), "stopwords.txt")
 
 sf = open(stopwords_file)
 stopwords = {}
