@@ -213,7 +213,7 @@ class XapianArticleLoader:
         
         query = xapian.Query(termbag[0])
         for term in termbag[1:]:
-            new_query = xapian.Query(termbag[0])
+            new_query = xapian.Query(term)
             query = xapian.Query(xapian.Query.OP_OR, query, new_query)
         
         print query
