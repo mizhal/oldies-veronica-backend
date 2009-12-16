@@ -19,13 +19,8 @@ class PostgreSQLArticleLoader:
 	def assignID(self, article):
 		if article.id is None:
 			cur = PostgresDBReader.getInstance().cursor()
-			try:
-				cur.execute(u"select id from articles where link = '%s' and feed = %s union select nextval('art_seq')"%(article.link, article.feed.id))
-			except Exception, e:
-				print e
-				PostgresDBReader.getInstance().commit()
-				raise "error al obtener el identificador"
-				
+			cur.execute(u"select id from articles where link = '%s' and feed = %s union select nextval('art_seq')"%(article.link, article.feed.id))
+
 			all = cur.fetchall()
 			if len(all) == 2:
 				article.isnew = False
