@@ -145,8 +145,12 @@ class XapianArticleLoader:
         self.reopen_db()
 
     def getFromQuery(self, query, offset = 0, count = 100):
-        query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
-
+        try:
+            query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
+        except xapian.DatabaseModifiedError, e: 
+            self.reopen_db()
+            query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
+        
         enquire = xapian.Enquire(self.read_db)
         enquire.set_query(query)
         try:
@@ -217,7 +221,12 @@ class XapianArticleLoader:
         for term in uncontent.split(" "):
             termbag.append("~%s"%term)
         query = " ".join(termbag)
-        query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
+        
+        try:
+            query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS)
+        except xapian.DatabaseModifiedError, e:
+            self.reopen_db()
+            query = self.parser.parse_query(query.encode("utf8"), DEFAULT_SEARCH_FLAGS) 
         
         enquire = xapian.Enquire(self.read_db)
         enquire.set_query(query)
