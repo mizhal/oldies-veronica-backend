@@ -1,4 +1,4 @@
-from exception import Exception
+from exceptions import Exception
 from time import strftime
 import re
 
