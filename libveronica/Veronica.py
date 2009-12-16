@@ -6,7 +6,7 @@ from dao.XapianArticleLoader import XapianArticleLoader as FTSArticleLoader
 from dao.PostgreSQLArticleLoader import PostgreSQLArticleLoader as DBArticleLoader
 from dao.PostgresFeedLoader import PostgresFeedLoader as DBFeedLoader
 from dao.PostgresDB import PostgresDBReader as DBReader
-from config import credentials, xapian_news_base
+from config import credentials, xapian_news_base, stopwords
 
 from model.Feed import Feed
 
@@ -70,6 +70,7 @@ class Veronica:
 		
 	def rebuildFTSIndex(self, user, session_token):
 		fts_index_mapper = FTSArticleLoader(xapian_news_base)
+		fts_index_mapper.setStopWords(stopwords)
 		database_mapper = DBArticleLoader()
 		
 		fts_index_mapper.cleanAll()
@@ -100,6 +101,7 @@ class Veronica:
 			feeds = loader.randomSelect()
 
 		fts_index_mapper = FTSArticleLoader(xapian_news_base)
+		fts_index_mapper.setStopWords(stopwords)
 		database_mapper = DBArticleLoader()
 		database_mapper.setCredentials(user, session_token)
 		for feed in feeds:

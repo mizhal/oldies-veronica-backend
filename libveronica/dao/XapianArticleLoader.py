@@ -35,7 +35,7 @@ BLANK_RE = re.compile("^\s*$")
 
 class XapianArticleLoader:
     URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP, PUB_TIMESTAMP, ID = range(7)
-    stopwords = None
+    stopwords = {}
     
     def __init__(self, db_dir, only_reader = False):
         self.db_dir = db_dir
@@ -48,7 +48,7 @@ class XapianArticleLoader:
         ## querys
         self.read_db = xapian.Database(db_dir)
         self.parser = xapian.QueryParser()
-        self.parser.set_database(self.read_db) 
+        self.parser.set_database(self.read_db)
         
     def _cleanArticleText(self, article):
         if BLANK_RE.match(article.title):
