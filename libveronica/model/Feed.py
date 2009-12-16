@@ -158,15 +158,19 @@ class Feed:
 			except UnicodeEncodeError, e:
 				print e
 				
+		self.last_read = datetime.now()
+				
 		for a in new2:
 			database_mapper.assignID(a)
 			database_mapper.save(a)
-			fts_index_mapper.save(a)
 			if print_news:
 				try:
 					print "Descargado: ", a.title, "\n\tpublicado:", a.pub_date
 				except UnicodeEncodeError, e:
 					print e
+			
+		## esta ultima parte del proceso podria fallar
+		for a in new2:
+			fts_index_mapper.save(a)
+
 		fts_index_mapper.flush()
-		
-		self.last_read = datetime.now()
