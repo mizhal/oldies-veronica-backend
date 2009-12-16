@@ -1,3 +1,4 @@
+from exception import Exception
 from time import strftime
 import re
 
@@ -20,7 +21,8 @@ class PostgreSQLArticleLoader:
 			cur = PostgresDBReader.getInstance().cursor()
 			try:
 				cur.execute(u"select id from articles where link = '%s' and feed = %s union select nextval('art_seq')"%(article.link, article.feed.id))
-			except:
+			except Exception, e:
+				print e
 				PostgresDBReader.getInstance().commit()
 				raise "error al obtener el identificador"
 				
