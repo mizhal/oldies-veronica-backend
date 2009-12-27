@@ -211,8 +211,6 @@ class XapianArticleLoader:
         self.stopwords = stopwords_dict
                 
     def getSimilarArticles(self, article, how_many):
-        ''' extrae los N terminos mas relevantes 
-        del articulo '''
             
         ## extraccion de terminos
         untitle, uncontent = self._cleanArticleText(article)
