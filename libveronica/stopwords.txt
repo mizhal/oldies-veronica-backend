@@ -179,6 +179,8 @@ yo
 aquel
 I
 a
+and
+or
 about
 an
 are
