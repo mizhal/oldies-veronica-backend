@@ -15,7 +15,8 @@ import xapian
 
 from infosfera.index.xapian.adapters import rel_to_prefix
 
-from ..utils.html_processing import decode_htmlentities, substitute_entity, replace_acute, strip_html_tags
+from ..utils.html_processing import decode_htmlentities, \
+        substitute_entity, replace_acute, strip_html_tags
 from ..model.Article import Article
 from .PostgresFeedLoader import PostgresFeedLoader
 
@@ -34,14 +35,16 @@ DEFAULT_SEARCH_FLAGS = (
 BLANK_RE = re.compile("^\s*$")
 
 class XapianArticleLoader:
-    URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP, PUB_TIMESTAMP, ID = range(7)
+    URL, TITLE, FEED_TITLE, FEED_ID, FETCH_TIMESTAMP,\
+    PUB_TIMESTAMP, ID = range(7)
     stopwords = {}
     
     def __init__(self, db_dir, only_reader = False):
         self.db_dir = db_dir
         
         if not only_reader:
-            self.wdb = xapian.WritableDatabase(db_dir, xapian.DB_CREATE_OR_OPEN)
+            self.wdb = xapian.WritableDatabase(db_dir, 
+                                xapian.DB_CREATE_OR_OPEN)
         else:
             self.wdb = None
 
@@ -52,7 +55,7 @@ class XapianArticleLoader:
         
     def _cleanArticleText(self, article):
         if BLANK_RE.match(article.title):
-           untitle = ''
+            untitle = ''
         else:
             try:
                 title = clean_html(article.title)
